@@ -3,7 +3,7 @@ import { createDirectus, rest, staticToken, readItems } from '@directus/sdk';
 const directusUrl = import.meta.env.DIRECTUS_URL;
 const directusToken = import.meta.env.DIRECTUS_TOKEN;
 
-const brand = import.meta.env.BRAND;
+const brand = import.meta.env.PUBLIC_BRAND;
 
 const directus = createDirectus(directusUrl)
   .with(staticToken(directusToken))
