@@ -68,40 +68,12 @@ const canonicalUrl = article.canonical_url || `${siteUrl}/articles/${article.slu
     {faqSchema && (
       <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
     )}
-
-    <style>
-      article header { margin-bottom: 32px; }
-      article h1 { font-size: 2rem; font-weight: 700; line-height: 1.2; margin-bottom: 12px; }
-      .excerpt { font-size: 1.1rem; color: #555; margin-bottom: 8px; }
-      time { font-size: 0.875rem; color: #888; }
-      .content h2 { font-size: 1.5rem; font-weight: 600; margin: 2rem 0 0.75rem; }
-      .content h3 { font-size: 1.2rem; font-weight: 600; margin: 1.5rem 0 0.5rem; }
-      .content p { margin-bottom: 1rem; }
-      .content ul, .content ol { margin-bottom: 1rem; padding-left: 1.5rem; }
-      .content li { margin-bottom: 0.35rem; }
-      .content blockquote { border-left: 3px solid #2563eb; padding: 0.5rem 1rem; margin: 1rem 0; color: #555; font-style: italic; }
-      .content table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
-      .content th, .content td { padding: 8px 12px; text-align: left; border: 1px solid #e5e7eb; font-size: 0.9rem; }
-      .content th { background: #f9fafb; font-weight: 600; }
-      .content code { background: #f3f4f6; padding: 2px 6px; border-radius: 4px; font-size: 0.9em; }
-      .content pre { background: #1e1e1e; color: #d4d4d4; padding: 16px; border-radius: 8px; overflow-x: auto; margin: 1rem 0; }
-      .content pre code { background: none; padding: 0; color: inherit; }
-      .faq { margin-top: 3rem; border-top: 1px solid #e5e7eb; padding-top: 2rem; }
-      .faq h2 { font-size: 1.3rem; margin-bottom: 1rem; }
-      details { margin-bottom: 0.75rem; }
-      summary { cursor: pointer; font-weight: 500; padding: 8px 0; }
-      details p { padding: 4px 0 12px 16px; color: #555; }
-      .related-articles { margin-top: 3rem; border-top: 1px solid #e5e7eb; padding-top: 2rem; }
-      .related-articles h2 { font-size: 1.2rem; margin-bottom: 0.75rem; }
-      .related-articles ul { list-style: none; padding: 0; }
-      .related-articles li { margin-bottom: 0.5rem; }
-    </style>
   </Fragment>
 
-  <article>
-    <header>
+  <article class="article">
+    <header class="article-header">
       <h1>{article.title}</h1>
-      {article.excerpt && <p class="excerpt">{article.excerpt}</p>}
+      {article.excerpt && <p class="article-excerpt">{article.excerpt}</p>}
       {article.published_at && (
         <time datetime={article.published_at}>
           {new Date(article.published_at).toLocaleDateString('en-US', {
@@ -113,10 +85,10 @@ const canonicalUrl = article.canonical_url || `${siteUrl}/articles/${article.slu
       )}
     </header>
 
-    <div class="content" set:html={bodyHtml} />
+    <div class="article-body" set:html={bodyHtml} />
 
     {article.faq_items && (article.faq_items as any[]).length > 0 && (
-      <section class="faq">
+      <section class="article-faq">
         <h2>Frequently Asked Questions</h2>
         {(article.faq_items as any[]).map((faq: any) => (
           <details>
@@ -128,7 +100,7 @@ const canonicalUrl = article.canonical_url || `${siteUrl}/articles/${article.slu
     )}
 
     {internalLinks.length > 0 && (
-      <nav class="related-articles">
+      <nav class="article-related">
         <h2>Related Articles</h2>
         <ul>
           {internalLinks.map((link) => (
@@ -139,3 +111,218 @@ const canonicalUrl = article.canonical_url || `${siteUrl}/articles/${article.slu
     )}
   </article>
 </BaseLayout>
+
+<style>
+  /* ── Article header ── */
+  .article-header {
+    margin-bottom: 48px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+  }
+  .article-header h1 {
+    font-family: var(--displayFont);
+    font-size: 42px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    margin-bottom: 12px;
+    color: var(--text);
+  }
+  .article-excerpt {
+    font-size: 17px;
+    color: var(--textMuted);
+    line-height: 1.6;
+    max-width: 640px;
+    margin-bottom: 12px;
+  }
+  time {
+    font-size: 13px;
+    color: var(--textFaint);
+  }
+
+  /* ── Article body ── */
+  .article-body :global(h2) {
+    font-family: var(--displayFont);
+    font-size: 24px;
+    font-weight: 600;
+    margin: 40px 0 16px;
+    letter-spacing: -0.01em;
+    color: var(--text);
+  }
+  .article-body :global(h3) {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 28px 0 12px;
+    color: var(--text);
+  }
+  .article-body :global(p) {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--textMuted);
+    margin-bottom: 16px;
+  }
+  .article-body :global(strong) {
+    color: var(--text);
+    font-weight: 600;
+  }
+  .article-body :global(ul),
+  .article-body :global(ol) {
+    margin-bottom: 16px;
+    padding-left: 24px;
+  }
+  .article-body :global(li) {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--textMuted);
+    margin-bottom: 6px;
+  }
+  .article-body :global(blockquote) {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin: 20px 0;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--textMuted);
+  }
+  .article-body :global(blockquote p) {
+    margin-bottom: 8px;
+  }
+  .article-body :global(blockquote p:last-child) {
+    margin-bottom: 0;
+  }
+  .article-body :global(blockquote strong) {
+    color: var(--text);
+  }
+  .article-body :global(a) {
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .article-body :global(a:hover) {
+    text-decoration: underline;
+  }
+  .article-body :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 14px;
+  }
+  .article-body :global(th),
+  .article-body :global(td) {
+    padding: 10px 14px;
+    text-align: left;
+    border: 1px solid var(--border);
+    color: var(--textMuted);
+  }
+  .article-body :global(th) {
+    background: var(--surface);
+    font-weight: 600;
+    color: var(--text);
+    font-size: 13px;
+  }
+  .article-body :global(code) {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: 0.9em;
+    color: var(--accent);
+  }
+  .article-body :global(pre) {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 20px 0;
+    overflow-x: auto;
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--textMuted);
+  }
+  .article-body :global(pre code) {
+    background: none;
+    border: none;
+    padding: 0;
+    color: inherit;
+  }
+  .article-body :global(em) {
+    font-style: italic;
+  }
+  .article-body :global(hr) {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 32px 0;
+  }
+
+  /* ── FAQ ── */
+  .article-faq {
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+  }
+  .article-faq h2 {
+    font-family: var(--displayFont);
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: var(--text);
+  }
+  details {
+    margin-bottom: 8px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    transition: border-color 0.2s;
+  }
+  details[open] {
+    border-color: var(--accent);
+  }
+  summary {
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text);
+    padding: 4px 0;
+  }
+  details p {
+    padding: 8px 0 4px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--textMuted);
+  }
+
+  /* ── Related articles ── */
+  .article-related {
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+  }
+  .article-related h2 {
+    font-family: var(--displayFont);
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: var(--text);
+  }
+  .article-related ul {
+    list-style: none;
+    padding: 0;
+  }
+  .article-related li {
+    margin-bottom: 8px;
+  }
+  .article-related a {
+    font-size: 14px;
+    color: var(--accent);
+  }
+
+  @media (max-width: 700px) {
+    .article-header h1 { font-size: 30px; }
+    .article-excerpt { font-size: 15px; }
+  }
+</style>
