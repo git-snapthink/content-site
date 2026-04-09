@@ -1,0 +1,13 @@
+// @ts-check
+import { defineConfig } from 'astro/config';
+import vercel from '@astrojs/vercel';
+import mdx from '@astrojs/mdx';
+
+export default defineConfig({
+  output: 'static',
+  adapter: vercel(),
+  integrations: [mdx()],
+  site: process.env.SITE_URL || undefined,
+  build: { inlineStylesheets: 'auto' },
+  vite: { build: { cssMinify: true } },
+});

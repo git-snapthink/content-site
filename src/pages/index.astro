@@ -1,0 +1,41 @@
+---
+import { getAllArticles } from '../lib/directus';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const articles = await getAllArticles() as any[];
+---
+
+<BaseLayout title="Articles">
+  <h1>Articles</h1>
+  <ul class="article-list">
+    {articles.map((article) => (
+      <li>
+        <a href={`/articles/${article.slug}`}>
+          <h2>{article.title}</h2>
+          {article.excerpt && <p>{article.excerpt}</p>}
+          {article.published_at && (
+            <time datetime={article.published_at}>
+              {new Date(article.published_at).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })}
+            </time>
+          )}
+        </a>
+      </li>
+    ))}
+  </ul>
+
+  <style>
+    h1 { font-size: 2rem; font-weight: 700; margin-bottom: 2rem; }
+    .article-list { list-style: none; padding: 0; }
+    .article-list li { margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 1px solid #e5e7eb; }
+    .article-list li:last-child { border-bottom: none; }
+    .article-list a { text-decoration: none; color: inherit; display: block; }
+    .article-list a:hover h2 { color: #2563eb; }
+    .article-list h2 { font-size: 1.3rem; font-weight: 600; margin-bottom: 6px; transition: color 0.15s; }
+    .article-list p { color: #555; font-size: 0.95rem; margin-bottom: 6px; }
+    .article-list time { font-size: 0.8rem; color: #999; }
+  </style>
+</BaseLayout>
