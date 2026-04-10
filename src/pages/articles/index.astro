@@ -5,44 +5,65 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 
 const articles = await getAllArticles() as any[];
 const theme = getBrandTheme();
+
+const thumbPatterns = [
+  '\u2592\u2593\u2591\u2592\u2593', '\u25C6\u25C7\u25C6\u25C7\u25C6', '\u2590\u2580\u2590\u2580\u2590',
+  '\u25A0\u25A1\u25A0\u25A1\u25A0', '\u2571\u2572\u2571\u2572\u2571', '\u25B2\u25B3\u25B2\u25B3\u25B2',
+];
+
+function getCategoryName(article: any): string | null {
+  const cats = article.categories;
+  if (cats && cats.length > 0 && cats[0].categories_id) {
+    return cats[0].categories_id.name;
+  }
+  return null;
+}
+
+function estimateReadTime(article: any): string {
+  const words = (article.body || article.content || '').split(/\s+/).length;
+  const minutes = Math.max(1, Math.round(words / 250));
+  return `${minutes} min`;
+}
 ---
 
 <BaseLayout title={`Articles — ${theme.name}`}>
   <div class="page-header">
-    <h1>Articles</h1>
-    <p>Insights, guides, and practical frameworks.</p>
+    <h1>The <span class="accent">{theme.name}</span> Blog</h1>
+    <p>Engineering deep-dives, product updates, tutorials, and stories from our community.</p>
   </div>
 
   {articles.length === 0 && (
     <p class="empty">No published articles yet.</p>
   )}
 
-  <ul class="article-list">
-    {articles.map((article) => (
-      <li>
-        <a href={`/articles/${article.slug}`} class="article-card">
-          <div class="article-card-content">
-            <h2>{article.title}</h2>
-            {article.excerpt && <p>{article.excerpt}</p>}
-            <div class="article-card-meta">
-              {article.published_at && (
-                <time datetime={article.published_at}>
-                  {new Date(article.published_at).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })}
-                </time>
-              )}
-              {article.primary_keyword && (
-                <span class="article-tag">{article.primary_keyword}</span>
-              )}
-            </div>
+  <div class="blog-grid">
+    {articles.map((article, i) => (
+      <a href={`/articles/${article.slug}`} class="blog-card">
+        <div class="blog-thumb">
+          <div class="blog-thumb-inner">{thumbPatterns[i % thumbPatterns.length]}</div>
+        </div>
+        <div class="blog-card-body">
+          <div class="blog-meta">
+            {article.published_at && (
+              <span>
+                {new Date(article.published_at).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric',
+                })}
+              </span>
+            )}
+            <span>{estimateReadTime(article)} read</span>
           </div>
-        </a>
-      </li>
+          <h2>{article.title}</h2>
+          {article.excerpt && <p>{article.excerpt}</p>}
+          {(getCategoryName(article) || article.primary_keyword) && (
+            <span class="blog-tag">{getCategoryName(article) || article.primary_keyword}</span>
+          )}
+        </div>
+      </a>
     ))}
-  </ul>
+  </div>
 </BaseLayout>
 
 <style>
@@ -57,10 +78,14 @@ const theme = getBrandTheme();
     margin-bottom: 12px;
     color: var(--text);
   }
+  .page-header .accent {
+    color: var(--accent);
+  }
   .page-header p {
     font-size: 17px;
     color: var(--textMuted);
     line-height: 1.6;
+    max-width: 640px;
   }
 
   .empty {
@@ -69,64 +94,86 @@ const theme = getBrandTheme();
     padding: 48px 0;
   }
 
-  .article-list {
-    list-style: none;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+  .blog-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px;
   }
 
-  .article-card {
-    display: block;
-    padding: 28px;
+  .blog-card {
     border-radius: 12px;
+    overflow: hidden;
     background: var(--surface);
     border: 1px solid var(--border);
     text-decoration: none;
     color: inherit;
     transition: border-color 0.2s;
+    cursor: pointer;
   }
-  .article-card:hover {
+  .blog-card:hover {
     border-color: var(--accent);
     text-decoration: none;
   }
 
-  .article-card h2 {
+  .blog-thumb {
+    height: 180px;
+    position: relative;
+    overflow: hidden;
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
+  }
+  .blog-thumb-inner {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    opacity: 0.4;
+    color: var(--accent);
+    font-family: monospace;
+    letter-spacing: 4px;
+  }
+
+  .blog-card-body {
+    padding: 24px;
+  }
+
+  .blog-meta {
+    font-size: 12px;
+    color: var(--textFaint);
+    margin-bottom: 8px;
+    display: flex;
+    gap: 12px;
+  }
+
+  .blog-card-body h2 {
     font-size: 18px;
     font-weight: 600;
     color: var(--text);
     margin-bottom: 8px;
     line-height: 1.3;
   }
-  .article-card p {
-    font-size: 14px;
+  .blog-card-body p {
+    font-size: 13px;
     color: var(--textMuted);
     line-height: 1.6;
-    margin-bottom: 12px;
   }
 
-  .article-card-meta {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .article-card-meta time {
-    font-size: 12px;
-    color: var(--textFaint);
-  }
-  .article-tag {
+  .blog-tag {
     display: inline-block;
     padding: 2px 10px;
     border-radius: 12px;
     font-size: 11px;
     font-weight: 500;
-    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    margin-top: 12px;
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
     color: var(--accent);
   }
 
+  @media (max-width: 900px) {
+    .blog-grid { grid-template-columns: 1fr; }
+  }
   @media (max-width: 700px) {
     .page-header h1 { font-size: 30px; }
-    .article-card { padding: 20px; }
   }
 </style>

@@ -18,7 +18,7 @@ const brands: Record<string, BrandTheme> = {
     name: 'NextBuild',
     displayFont: 'Audiowide',
     googleFont: 'Audiowide',
-    bg: '#edebeb',
+    bg: '#f5f5f5',
     surface: '#ffffff',
     border: '#e8e8e8',
     text: '#1a1a1a',
