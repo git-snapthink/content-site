@@ -49,45 +49,191 @@ const googleFontUrl = theme.googleFont
         min-height: 100vh;
       }
 
-      /* ── Nav ── */
-      .site-nav {
-        padding: 20px 48px;
+      /* ── Easing tokens ── */
+      :root {
+        --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+        --ease-spring: cubic-bezier(0.32, 0.72, 0, 1);
+        --radius-pill: 9999px;
+        --radius-lg: 1.5rem;
+      }
+
+      /* ── Navigation — Floating Glass Pill ── */
+      .nav-wrapper {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 40;
+        display: flex;
+        justify-content: center;
+        padding-top: 20px;
+        transition: padding-top 0.6s var(--ease-out-expo);
+      }
+      .nav-wrapper.scrolled {
+        padding-top: 12px;
+      }
+      .nav {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        border-bottom: 1px solid var(--border);
-        max-width: 1200px;
-        margin: 0 auto;
+        gap: 32px;
+        padding: 12px 12px 12px 28px;
+        border-radius: var(--radius-pill);
+        background: rgba(255, 255, 255, 0.75);
+        border: 1px solid var(--border);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        width: min(92vw, 880px);
+        transition: all 0.6s var(--ease-out-expo);
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
       }
-      .nav-brand {
+      .nav-wrapper.scrolled .nav {
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 4px 32px rgba(0, 0, 0, 0.1);
+      }
+      .nav-logo {
         display: flex;
         align-items: center;
         gap: 10px;
         text-decoration: none;
         color: var(--text);
+        flex-shrink: 0;
       }
-      .nav-brand-name {
+      .nav-logo svg {
+        height: 28px;
+        width: auto;
+      }
+      .nav-logo-text {
         font-family: var(--displayFont);
         font-size: 20px;
         line-height: 1.15;
       }
       .nav-links {
         display: flex;
-        gap: 28px;
+        align-items: center;
+        gap: 4px;
+        list-style: none;
       }
       .nav-links a {
         font-size: 14px;
+        font-weight: 500;
         color: var(--textMuted);
+        padding: 8px 16px;
+        border-radius: var(--radius-pill);
+        transition: all 0.4s var(--ease-out-expo);
+        white-space: nowrap;
         text-decoration: none;
-        transition: color 0.15s;
       }
-      .nav-links a:hover { color: var(--text); }
+      .nav-links a:hover {
+        color: var(--text);
+        background: rgba(0, 0, 0, 0.04);
+        text-decoration: none;
+      }
+      .nav-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 22px;
+        border-radius: var(--radius-pill);
+        background: var(--accent);
+        color: var(--accentText);
+        font-size: 14px;
+        font-weight: 600;
+        font-family: system-ui, sans-serif;
+        border: none;
+        cursor: pointer;
+        transition: all 0.5s var(--ease-spring);
+        white-space: nowrap;
+        text-decoration: none;
+        flex-shrink: 0;
+      }
+      .nav-cta:hover {
+        opacity: 0.88;
+        transform: scale(1.02);
+        text-decoration: none;
+      }
+
+      /* ── Hamburger ── */
+      .nav-hamburger {
+        display: none;
+        flex-direction: column;
+        gap: 5px;
+        cursor: pointer;
+        padding: 8px;
+        background: none;
+        border: none;
+      }
+      .nav-hamburger span {
+        display: block;
+        width: 22px;
+        height: 1.5px;
+        background: var(--text);
+        border-radius: 2px;
+        transition: all 0.4s var(--ease-out-expo);
+        transform-origin: center;
+      }
+      .nav-hamburger.active span:nth-child(1) {
+        transform: rotate(45deg) translate(4px, 4px);
+      }
+      .nav-hamburger.active span:nth-child(2) {
+        opacity: 0;
+        transform: scaleX(0);
+      }
+      .nav-hamburger.active span:nth-child(3) {
+        transform: rotate(-45deg) translate(4px, -4px);
+      }
+
+      /* ── Mobile overlay ── */
+      .mobile-menu {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 35;
+        background: rgba(255, 255, 255, 0.97);
+        backdrop-filter: blur(40px);
+        -webkit-backdrop-filter: blur(40px);
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.5s var(--ease-out-expo);
+      }
+      .mobile-menu.active {
+        display: flex;
+        opacity: 1;
+        pointer-events: all;
+      }
+      .mobile-menu a {
+        font-family: var(--displayFont);
+        font-size: 28px;
+        font-weight: 500;
+        color: var(--textMuted);
+        padding: 12px 24px;
+        border-radius: var(--radius-lg);
+        transition: all 0.4s var(--ease-out-expo);
+        transform: translateY(30px);
+        opacity: 0;
+        text-decoration: none;
+      }
+      .mobile-menu.active a {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      .mobile-menu.active a:nth-child(1) { transition-delay: 0.1s; }
+      .mobile-menu.active a:nth-child(2) { transition-delay: 0.15s; }
+      .mobile-menu.active a:nth-child(3) { transition-delay: 0.2s; }
+      .mobile-menu.active a:nth-child(4) { transition-delay: 0.25s; }
+      .mobile-menu a:hover {
+        color: var(--text);
+      }
 
       /* ── Container ── */
       .container {
         max-width: 1100px;
         margin: 0 auto;
-        padding: 80px 48px 100px;
+        padding: 120px 48px 100px;
       }
 
       /* ── Footer ── */
@@ -118,22 +264,44 @@ const googleFontUrl = theme.googleFont
       a { color: var(--accent); text-decoration: none; }
       a:hover { text-decoration: underline; }
 
-      @media (max-width: 700px) {
-        .site-nav, .container, .site-footer { padding-left: 20px; padding-right: 20px; }
+      @media (max-width: 900px) {
         .nav-links { display: none; }
+        .nav-cta.desktop-only { display: none; }
+        .nav-hamburger { display: flex; }
+      }
+      @media (max-width: 700px) {
+        .container, .site-footer { padding-left: 20px; padding-right: 20px; }
       }
     </style>
   </head>
   <body>
-    <nav class="site-nav">
-      <a href="/" class="nav-brand">
-        {theme.logoHtml ? <Fragment set:html={theme.logoHtml} /> : <span class="nav-brand-name">{theme.name}</span>}
-      </a>
-      <div class="nav-links">
-        <a href="/">Home</a>
-        <a href="/articles">Articles</a>
-      </div>
-    </nav>
+    <!-- Navigation — Floating Glass Pill -->
+    <div class="nav-wrapper" id="navWrapper">
+      <nav class="nav">
+        <a href="/" class="nav-logo">
+          {theme.logoHtml ? <Fragment set:html={theme.logoHtml} /> : <span class="nav-logo-text">{theme.name}</span>}
+        </a>
+        <div class="nav-links">
+          <a href="/#how-it-works">How It Works</a>
+          <a href="/#what-you-get">What You Get</a>
+          <a href="/articles">Articles</a>
+        </div>
+        <a href="/#cta" class="nav-cta desktop-only">Get Early Access</a>
+        <button class="nav-hamburger" id="hamburger" aria-label="Menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- Mobile menu -->
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="/#how-it-works">How It Works</a>
+      <a href="/#what-you-get">What You Get</a>
+      <a href="/articles">Articles</a>
+      <a href="/#cta">Get Early Access</a>
+    </div>
 
     <main class="container">
       <slot />
@@ -145,5 +313,31 @@ const googleFontUrl = theme.googleFont
       </a>
       <span class="footer-copy">&copy; {new Date().getFullYear()} {theme.name}. All rights reserved.</span>
     </footer>
+
+    <script is:inline>
+      // Nav scroll behavior
+      const navWrapper = document.getElementById('navWrapper');
+      window.addEventListener('scroll', () => {
+        navWrapper.classList.toggle('scrolled', window.scrollY > 60);
+      }, { passive: true });
+
+      // Hamburger toggle
+      const hamburger = document.getElementById('hamburger');
+      const mobileMenu = document.getElementById('mobileMenu');
+      hamburger.addEventListener('click', () => {
+        hamburger.classList.toggle('active');
+        mobileMenu.classList.toggle('active');
+        document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+      });
+
+      // Close mobile menu on link click
+      mobileMenu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          hamburger.classList.remove('active');
+          mobileMenu.classList.remove('active');
+          document.body.style.overflow = '';
+        });
+      });
+    </script>
   </body>
 </html>
