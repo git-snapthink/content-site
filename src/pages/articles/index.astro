@@ -5,6 +5,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 
 const articles = await getAllArticles() as any[];
 const theme = getBrandTheme();
+const directusUrl = import.meta.env.DIRECTUS_URL || '';
 
 const thumbPatterns = [
   '\u2592\u2593\u2591\u2592\u2593', '\u25C6\u25C7\u25C6\u25C7\u25C6', '\u2590\u2580\u2590\u2580\u2590',
@@ -40,7 +41,11 @@ function estimateReadTime(article: any): string {
     {articles.map((article, i) => (
       <a href={`/articles/${article.slug}`} class="blog-card">
         <div class="blog-thumb">
-          <div class="blog-thumb-inner">{thumbPatterns[i % thumbPatterns.length]}</div>
+          {article.og_image ? (
+            <img src={`${directusUrl}/assets/${article.og_image}`} alt={article.title} loading="lazy" class="blog-thumb-img" />
+          ) : (
+            <div class="blog-thumb-inner">{thumbPatterns[i % thumbPatterns.length]}</div>
+          )}
         </div>
         <div class="blog-card-body">
           <div class="blog-meta">
@@ -120,6 +125,12 @@ function estimateReadTime(article: any): string {
     position: relative;
     overflow: hidden;
     background: color-mix(in srgb, var(--accent) 8%, transparent);
+  }
+  .blog-thumb-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
   .blog-thumb-inner {
     width: 100%;

@@ -36,7 +36,9 @@ const faqSchema = article.faq_items?.length
   : null;
 
 const siteUrl = import.meta.env.SITE_URL || '';
+const directusUrl = import.meta.env.DIRECTUS_URL || '';
 const canonicalUrl = article.canonical_url || `${siteUrl}/articles/${article.slug}`;
+const ogImageUrl = article.og_image ? `${directusUrl}/assets/${article.og_image}` : null;
 
 // Render markdown to HTML (passthrough for already-HTML bodies)
 const rawBody = article.body || '';
@@ -74,6 +76,7 @@ const tags = ((article.tags || []) as any[])
     <meta property="og:description" content={article.og_description || article.meta_description || article.excerpt || ''} />
     <meta property="og:type" content="article" />
     <meta property="og:url" content={canonicalUrl} />
+    {ogImageUrl && <meta property="og:image" content={ogImageUrl} />}
 
     {article.published_at && <meta property="article:published_time" content={article.published_at} />}
     {(article.categories as any[])?.map((cat: any) => (
@@ -112,6 +115,12 @@ const tags = ((article.tags || []) as any[])
           ))}
         </div>
       )}
+    </div>
+  )}
+
+  {ogImageUrl && (
+    <div class="featured-image">
+      <img src={ogImageUrl} alt={article.title} loading="eager" />
     </div>
   )}
 
@@ -217,6 +226,21 @@ const tags = ((article.tags || []) as any[])
     letter-spacing: 0.04em;
     background: color-mix(in srgb, var(--accent) 10%, transparent);
     color: var(--accent);
+  }
+
+  /* ── Featured image ── */
+  .featured-image {
+    margin-bottom: 32px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .featured-image img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
   }
 
   /* ── Article layout — content left, TOC right ── */
