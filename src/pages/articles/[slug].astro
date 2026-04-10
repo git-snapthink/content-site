@@ -39,6 +39,34 @@ const faqSchema = article.faq_items?.length
 
 const siteUrl = import.meta.env.SITE_URL || '';
 const canonicalUrl = article.canonical_url || `${siteUrl}/articles/${article.slug}`;
+
+// Extract h2/h3 headings from markdown for TOC sidebar
+const headingRegex = /^(#{2,3})\s+(.+)$/gm;
+const tocItems: Array<{ level: number; text: string; id: string }> = [];
+let match;
+const rawBody = article.body || '';
+while ((match = headingRegex.exec(rawBody)) !== null) {
+  const level = match[1].length;
+  const text = match[2].replace(/[*_`\[\]]/g, '');
+  const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  tocItems.push({ level, text, id });
+}
+
+// Configure marked to add IDs to headings
+const renderer = new marked.Renderer();
+renderer.heading = ({ text, depth }: { text: string; depth: number }) => {
+  const rawText = text.replace(/<[^>]+>/g, '');
+  const id = rawText.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  return `<h${depth} id="${id}">${text}</h${depth}>`;
+};
+const bodyHtmlWithIds = await marked(rawBody, { renderer });
+
+const categories = ((article.categories || []) as any[])
+  .map((c: any) => c.categories_id?.name)
+  .filter(Boolean);
+const tags = ((article.tags || []) as any[])
+  .map((t: any) => t.tags_id?.name)
+  .filter(Boolean);
 ---
 
 <BaseLayout
@@ -70,56 +98,96 @@ const canonicalUrl = article.canonical_url || `${siteUrl}/articles/${article.slu
     )}
   </Fragment>
 
-  <article class="article">
-    <header class="article-header">
-      <h1>{article.title}</h1>
-      {article.excerpt && <p class="article-excerpt">{article.excerpt}</p>}
+  <div class="page-header">
+    <h1>{article.title}</h1>
+    {article.excerpt && <p>{article.excerpt}</p>}
+  </div>
+
+  <div class="docs-layout">
+    <aside class="docs-sidebar">
       {article.published_at && (
-        <time datetime={article.published_at}>
-          {new Date(article.published_at).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })}
-        </time>
+        <div class="sidebar-meta">
+          <time datetime={article.published_at}>
+            {new Date(article.published_at).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })}
+          </time>
+        </div>
       )}
-    </header>
 
-    <div class="article-body" set:html={bodyHtml} />
+      {tocItems.length > 0 && (
+        <>
+          <h4>On This Page</h4>
+          <ul>
+            {tocItems.map((item) => (
+              <li>
+                <a href={`#${item.id}`} class:list={[{ nested: item.level === 3 }]}>{item.text}</a>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
 
-    {article.faq_items && (article.faq_items as any[]).length > 0 && (
-      <section class="article-faq">
-        <h2>Frequently Asked Questions</h2>
-        {(article.faq_items as any[]).map((faq: any) => (
-          <details>
-            <summary>{faq.question}</summary>
-            <p>{faq.answer}</p>
-          </details>
-        ))}
-      </section>
-    )}
+      {categories.length > 0 && (
+        <>
+          <h4>Categories</h4>
+          <ul>
+            {categories.map((name) => (
+              <li><span class="sidebar-tag">{name}</span></li>
+            ))}
+          </ul>
+        </>
+      )}
 
-    {internalLinks.length > 0 && (
-      <nav class="article-related">
-        <h2>Related Articles</h2>
-        <ul>
-          {internalLinks.map((link) => (
-            <li><a href={`/articles/${link.slug}`}>{link.anchor_text}</a></li>
+      {tags.length > 0 && (
+        <>
+          <h4>Tags</h4>
+          <div class="sidebar-tags">
+            {tags.map((name) => (
+              <span class="sidebar-tag">{name}</span>
+            ))}
+          </div>
+        </>
+      )}
+
+      {internalLinks.length > 0 && (
+        <>
+          <h4>Related Articles</h4>
+          <ul>
+            {internalLinks.map((link) => (
+              <li><a href={`/articles/${link.slug}`}>{link.anchor_text}</a></li>
+            ))}
+          </ul>
+        </>
+      )}
+    </aside>
+
+    <article class="docs-body">
+      <div class="article-body" set:html={bodyHtmlWithIds} />
+
+      {article.faq_items && (article.faq_items as any[]).length > 0 && (
+        <section class="article-faq">
+          <h2 id="faq">Frequently Asked Questions</h2>
+          {(article.faq_items as any[]).map((faq: any) => (
+            <details>
+              <summary>{faq.question}</summary>
+              <p>{faq.answer}</p>
+            </details>
           ))}
-        </ul>
-      </nav>
-    )}
-  </article>
+        </section>
+      )}
+    </article>
+  </div>
 </BaseLayout>
 
 <style>
-  /* ── Article header ── */
-  .article-header {
+  /* ── Page header ── */
+  .page-header {
     margin-bottom: 48px;
-    padding-bottom: 32px;
-    border-bottom: 1px solid var(--border);
   }
-  .article-header h1 {
+  .page-header h1 {
     font-family: var(--displayFont);
     font-size: 42px;
     font-weight: 700;
@@ -128,25 +196,97 @@ const canonicalUrl = article.canonical_url || `${siteUrl}/articles/${article.slu
     margin-bottom: 12px;
     color: var(--text);
   }
-  .article-excerpt {
+  .page-header p {
     font-size: 17px;
     color: var(--textMuted);
     line-height: 1.6;
     max-width: 640px;
+  }
+
+  /* ── Docs layout ── */
+  .docs-layout {
+    display: flex;
+    gap: 40px;
+  }
+
+  /* ── Sidebar ── */
+  .docs-sidebar {
+    width: 220px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 32px;
+    align-self: flex-start;
+  }
+  .sidebar-meta {
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebar-meta time {
+    font-size: 12px;
+    color: var(--textFaint);
+  }
+  .docs-sidebar h4 {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--textFaint);
     margin-bottom: 12px;
   }
-  time {
+  .docs-sidebar ul {
+    list-style: none;
+    margin-bottom: 24px;
+    padding: 0;
+  }
+  .docs-sidebar li {
+    margin-bottom: 2px;
+  }
+  .docs-sidebar a {
+    display: block;
+    padding: 6px 12px;
+    border-radius: 6px;
     font-size: 13px;
-    color: var(--textFaint);
+    color: var(--textMuted);
+    text-decoration: none;
+    transition: all 0.15s;
+  }
+  .docs-sidebar a:hover {
+    color: var(--text);
+    background: var(--surface);
+    text-decoration: none;
+  }
+  .docs-sidebar a.nested {
+    padding-left: 24px;
+    font-size: 12px;
+  }
+  .sidebar-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 24px;
+  }
+  .sidebar-tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+    color: var(--accent);
+  }
+
+  /* ── Docs body ── */
+  .docs-body {
+    flex: 1;
+    min-width: 0;
   }
 
   /* ── Article body ── */
   .article-body :global(h2) {
-    font-family: var(--displayFont);
     font-size: 24px;
     font-weight: 600;
-    margin: 40px 0 16px;
-    letter-spacing: -0.01em;
+    margin: 28px 0 16px;
     color: var(--text);
   }
   .article-body :global(h3) {
@@ -156,7 +296,7 @@ const canonicalUrl = article.canonical_url || `${siteUrl}/articles/${article.slu
     color: var(--text);
   }
   .article-body :global(p) {
-    font-size: 15px;
+    font-size: 14px;
     line-height: 1.7;
     color: var(--textMuted);
     margin-bottom: 16px;
@@ -171,20 +311,19 @@ const canonicalUrl = article.canonical_url || `${siteUrl}/articles/${article.slu
     padding-left: 24px;
   }
   .article-body :global(li) {
-    font-size: 15px;
+    font-size: 14px;
     line-height: 1.7;
     color: var(--textMuted);
     margin-bottom: 6px;
   }
   .article-body :global(blockquote) {
-    background: var(--surface);
-    border: 1px solid var(--border);
+    background: color-mix(in srgb, var(--accent) 5%, transparent);
     border-left: 3px solid var(--accent);
     border-radius: 8px;
-    padding: 20px 24px;
+    padding: 16px 20px;
     margin: 20px 0;
-    font-size: 14px;
-    line-height: 1.7;
+    font-size: 13px;
+    line-height: 1.6;
     color: var(--textMuted);
   }
   .article-body :global(blockquote p) {
@@ -265,7 +404,6 @@ const canonicalUrl = article.canonical_url || `${siteUrl}/articles/${article.slu
     border-top: 1px solid var(--border);
   }
   .article-faq h2 {
-    font-family: var(--displayFont);
     font-size: 20px;
     font-weight: 600;
     margin-bottom: 16px;
@@ -296,33 +434,17 @@ const canonicalUrl = article.canonical_url || `${siteUrl}/articles/${article.slu
     color: var(--textMuted);
   }
 
-  /* ── Related articles ── */
-  .article-related {
-    margin-top: 48px;
-    padding-top: 32px;
-    border-top: 1px solid var(--border);
+  @media (max-width: 900px) {
+    .docs-layout {
+      flex-direction: column;
+    }
+    .docs-sidebar {
+      width: 100%;
+      position: static;
+    }
   }
-  .article-related h2 {
-    font-family: var(--displayFont);
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 12px;
-    color: var(--text);
-  }
-  .article-related ul {
-    list-style: none;
-    padding: 0;
-  }
-  .article-related li {
-    margin-bottom: 8px;
-  }
-  .article-related a {
-    font-size: 14px;
-    color: var(--accent);
-  }
-
   @media (max-width: 700px) {
-    .article-header h1 { font-size: 30px; }
-    .article-excerpt { font-size: 15px; }
+    .page-header h1 { font-size: 30px; }
+    .page-header p { font-size: 15px; }
   }
 </style>
