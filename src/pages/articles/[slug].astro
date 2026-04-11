@@ -50,7 +50,7 @@ const tocItems: Array<{ level: number; text: string; id: string }> = [];
 const bodyHtmlWithIds = rawHtml.replace(
   /<h([23])([^>]*)>(.*?)<\/h\1>/gi,
   (_full: string, level: string, attrs: string, inner: string) => {
-    const text = inner.replace(/<[^>]+>/g, '');
+    const text = inner.replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, ' ');
     const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
     tocItems.push({ level: parseInt(level, 10), text, id });
     return `<h${level} id="${id}"${attrs}>${inner}</h${level}>`;
