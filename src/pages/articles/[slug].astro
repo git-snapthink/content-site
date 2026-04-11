@@ -39,6 +39,7 @@ const siteUrl = import.meta.env.SITE_URL || '';
 const directusUrl = import.meta.env.DIRECTUS_URL || '';
 const canonicalUrl = article.canonical_url || `${siteUrl}/articles/${article.slug}`;
 const ogImageUrl = article.og_image ? `${directusUrl}/assets/${article.og_image}` : null;
+const heroImageUrl = article.og_image ? `${directusUrl}/assets/${article.og_image}?width=1200&format=webp&quality=85` : null;
 
 // Render markdown to HTML (passthrough for already-HTML bodies)
 const rawBody = article.body || '';
@@ -118,9 +119,9 @@ const tags = ((article.tags || []) as any[])
     </div>
   )}
 
-  {ogImageUrl && (
+  {heroImageUrl && (
     <div class="featured-image">
-      <img src={ogImageUrl} alt={article.title} loading="eager" />
+      <img src={heroImageUrl} alt={article.title} loading="eager" />
     </div>
   )}
 

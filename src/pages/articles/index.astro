@@ -41,8 +41,8 @@ function estimateReadTime(article: any): string {
     {articles.map((article, i) => (
       <a href={`/articles/${article.slug}`} class="blog-card">
         <div class="blog-thumb">
-          {article.og_image ? (
-            <img src={`${directusUrl}/assets/${article.og_image}`} alt={article.title} loading="lazy" class="blog-thumb-img" />
+          {(article.featured_image || article.og_image) ? (
+            <img src={`${directusUrl}/assets/${article.featured_image || article.og_image}?width=600&format=webp&quality=80`} alt={article.title} loading="lazy" class="blog-thumb-img" />
           ) : (
             <div class="blog-thumb-inner">{thumbPatterns[i % thumbPatterns.length]}</div>
           )}
