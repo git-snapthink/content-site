@@ -1,7 +1,173 @@
 ---
 import LandingLayout from '../layouts/LandingLayout.astro';
+
+const brand = import.meta.env.PUBLIC_BRAND;
+const isJCL = brand === 'jason-c-lewis';
 ---
 
+{isJCL ? (
+<LandingLayout
+  title="Jason C. Lewis — AI Strategy, Leadership & Execution"
+  description="Strategic AI and leadership insight from someone who's been in the room — AWS, Gartner, and multiple technology ventures. Zero hype. Maximum signal."
+  navLinks={[
+    { label: 'Background', href: '#background' },
+    { label: 'Writing', href: '#themes' },
+    { label: 'Articles', href: '/articles' },
+  ]}
+  ctaLabel="Subscribe"
+  ctaHref="#subscribe"
+>
+
+  <!-- ════════════════════════════════════════
+       HERO
+       ════════════════════════════════════════ -->
+  <section class="hero">
+    <div class="hero-grid"></div>
+    <div class="hero-orb hero-orb--primary"></div>
+    <div class="hero-orb hero-orb--secondary"></div>
+    <div class="hero-orb hero-orb--center"></div>
+
+    <div class="hero-content">
+      <div class="eyebrow">
+        <span class="dot"></span>
+        AI Strategy &middot; Leadership &middot; Execution
+      </div>
+      <h1>Jason C. Lewis</h1>
+      <p class="hero-sub">
+        Strategic AI and leadership insight from someone who's been in the room — leading AI startup support at AWS, directing strategy for 14,000+ organizations at Gartner, and building technology ventures. Zero hype. Maximum signal.
+      </p>
+      <div class="hero-ctas">
+        <a href="#subscribe" class="cta-btn">
+          Subscribe to Newsletter
+          <span class="btn-arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </span>
+        </a>
+        <a href="https://www.linkedin.com/in/jasonclewis/" target="_blank" rel="noopener" class="cta-btn cta-btn--secondary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          Follow on LinkedIn
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════
+       BACKGROUND / CREDIBILITY
+       ════════════════════════════════════════ -->
+  <section class="section background" id="background">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="eyebrow">
+          <span class="dot"></span>
+          Background
+        </div>
+        <h2>Operator Credibility at <span class="accent">Every Altitude</span></h2>
+        <p>Two decades at the intersection of cloud, AI, and leadership — from hyperscale to startup to the advisory boardroom.</p>
+      </div>
+
+      <div class="cards-grid">
+        <div class="card reveal reveal-delay-1">
+          <div class="card-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          </div>
+          <div class="card-label">Amazon Web Services</div>
+          <h3>AI Startup Leadership</h3>
+          <p>Leading Premium Support for the most prominent AI and cloud startups across North America. Seeing what's actually working in production — not what's being demo'd at conferences.</p>
+        </div>
+
+        <div class="card reveal reveal-delay-2">
+          <div class="card-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          </div>
+          <div class="card-label">Gartner</div>
+          <h3>Enterprise AI Advisory</h3>
+          <p>Directed the global Data & Analytics practice for 14,000+ organizations. Shaped how executives think about AI and data strategy through keynotes at international events.</p>
+        </div>
+
+        <div class="card reveal reveal-delay-3">
+          <div class="card-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>
+          </div>
+          <div class="card-label">Ventures</div>
+          <h3>Founder & Advisor</h3>
+          <p>Founded and sold multiple technology ventures. Served as venture advisor conducting technical due diligence and acting as interim CIO/CTO — from founding through scaling through exit.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════
+       THEMES / WHAT I WRITE ABOUT
+       ════════════════════════════════════════ -->
+  <section class="section themes" id="themes">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="eyebrow">
+          <span class="dot"></span>
+          What I Write About
+        </div>
+        <h2>Signal Over <span class="accent">Noise</span></h2>
+        <p>In a landscape flooded with breathless AI takes and doomsday predictions, this is the place for calibrated, experience-grounded perspective.</p>
+      </div>
+
+      <div class="themes-grid">
+        <div class="theme-card reveal reveal-delay-1">
+          <span class="theme-number">01</span>
+          <h3>AI Strategy Requires Operating Experience</h3>
+          <p>Insights come from leading AI initiatives at AWS and Gartner and building ventures — not from reading papers or interviewing practitioners.</p>
+        </div>
+
+        <div class="theme-card reveal reveal-delay-2">
+          <span class="theme-number">02</span>
+          <h3>The Execution Gap Is Where Organizations Fail</h3>
+          <p>Most companies have an AI strategy. Very few have AI execution. The value is in translating vision into infrastructure, teams, and results.</p>
+        </div>
+
+        <div class="theme-card reveal reveal-delay-3">
+          <span class="theme-number">03</span>
+          <h3>Leadership Is the Multiplier</h3>
+          <p>AI doesn't replace leadership — it amplifies it. Great leaders use AI to build higher-performing teams. The technology is neutral; the leadership isn't.</p>
+        </div>
+
+        <div class="theme-card reveal reveal-delay-1">
+          <span class="theme-number">04</span>
+          <h3>The Startup-Enterprise Bridge</h3>
+          <p>What startups get right about speed, enterprises get right about scale. The best organizations learn from both. This cross-pollination perspective is rare.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════
+       SUBSCRIBE CTA
+       ════════════════════════════════════════ -->
+  <section class="section cta-section" id="subscribe">
+    <div class="container">
+      <div class="cta-content reveal">
+        <h2>Get the <span class="accent">Signal</span></h2>
+        <p>Strategic AI and leadership perspective, delivered to your inbox. No hype. No spam. Just the insight that matters.</p>
+        <form class="cta-shell" id="ctaForm">
+          <div class="cta-inner">
+            <input type="email" placeholder="you@company.com" required />
+            <button type="submit" class="cta-btn">
+              Subscribe
+              <span class="btn-arrow">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+              </span>
+            </button>
+          </div>
+        </form>
+        <div class="form-success" id="ctaSuccess">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          You're on the list. Welcome aboard.
+        </div>
+        <p class="trust-text">Free. No spam. Unsubscribe anytime.</p>
+      </div>
+    </div>
+  </section>
+
+</LandingLayout>
+) : (
 <LandingLayout
   title="NextBuild — AI Tools, Frameworks & Guides for Builders"
   description="NextBuild helps founders and builders ship AI-powered products faster with practical frameworks, guides, and real implementation strategies."
@@ -216,6 +382,7 @@ import LandingLayout from '../layouts/LandingLayout.astro';
   </section>
 
 </LandingLayout>
+)}
 
 <style>
   /* ════════════════════════════════════════
@@ -337,6 +504,39 @@ import LandingLayout from '../layouts/LandingLayout.astro';
     font-weight: 400;
   }
 
+  /* ── Hero CTAs (JCL variant) ── */
+  .hero-ctas {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .cta-btn--secondary {
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 24px;
+    border-radius: 9999px;
+    font-family: system-ui, sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+    text-decoration: none;
+  }
+
+  .cta-btn--secondary:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    transform: scale(1.03);
+  }
+
   /* ── CTA Form ── */
   .cta-shell {
     display: inline-flex;
@@ -396,6 +596,7 @@ import LandingLayout from '../layouts/LandingLayout.astro';
     white-space: nowrap;
     transition: all 0.5s cubic-bezier(0.32, 0.72, 0, 1);
     flex-shrink: 0;
+    text-decoration: none;
   }
 
   .cta-btn:hover {
@@ -505,7 +706,7 @@ import LandingLayout from '../layouts/LandingLayout.astro';
   }
 
   /* ════════════════════════════════════════
-     PROBLEM CARDS
+     CARDS (shared between brands)
      ════════════════════════════════════════ */
   .cards-grid {
     display: grid;
@@ -539,6 +740,15 @@ import LandingLayout from '../layouts/LandingLayout.astro';
     color: var(--accent);
   }
 
+  .card-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
   .card h3 {
     font-size: 17px;
     font-weight: 600;
@@ -553,7 +763,54 @@ import LandingLayout from '../layouts/LandingLayout.astro';
   }
 
   /* ════════════════════════════════════════
-     HOW IT WORKS — STEPS
+     THEMES GRID (JCL)
+     ════════════════════════════════════════ */
+  .themes-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .theme-card {
+    padding: 36px 32px;
+    border-radius: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+  }
+
+  .theme-card:hover {
+    border-color: var(--accent);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+    transform: translateY(-4px);
+  }
+
+  .theme-number {
+    display: block;
+    font-family: var(--displayFont);
+    font-size: 42px;
+    font-weight: 700;
+    color: var(--accent-tint);
+    line-height: 1;
+    margin-bottom: 20px;
+    letter-spacing: -0.02em;
+  }
+
+  .theme-card h3 {
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--text);
+  }
+
+  .theme-card p {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--textMuted);
+  }
+
+  /* ════════════════════════════════════════
+     HOW IT WORKS — STEPS (NextBuild)
      ════════════════════════════════════════ */
   .steps-grid {
     display: grid;
@@ -600,7 +857,7 @@ import LandingLayout from '../layouts/LandingLayout.astro';
   }
 
   /* ════════════════════════════════════════
-     FEATURES GRID
+     FEATURES GRID (NextBuild)
      ════════════════════════════════════════ */
   .features-grid {
     display: grid;
@@ -693,6 +950,12 @@ import LandingLayout from '../layouts/LandingLayout.astro';
       margin: 0 auto;
     }
 
+    .themes-grid {
+      grid-template-columns: 1fr;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
     .hero h1 {
       font-size: 36px;
     }
@@ -730,6 +993,17 @@ import LandingLayout from '../layouts/LandingLayout.astro';
     .cta-btn {
       width: 100%;
       justify-content: center;
+    }
+
+    .hero-ctas {
+      flex-direction: column;
+    }
+
+    .hero-ctas .cta-btn,
+    .hero-ctas .cta-btn--secondary {
+      width: 100%;
+      justify-content: center;
+      max-width: 320px;
     }
 
     .section-header h2 {

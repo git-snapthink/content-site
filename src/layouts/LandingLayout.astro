@@ -1,12 +1,25 @@
 ---
 import { getBrandTheme } from '../lib/brands';
 
+interface NavLink {
+  label: string;
+  href: string;
+}
+
 interface Props {
   title: string;
   description?: string;
+  navLinks?: NavLink[];
+  ctaLabel?: string;
+  ctaHref?: string;
 }
 
-const { title, description } = Astro.props;
+const { title, description, ctaLabel = 'Get Early Access', ctaHref = '#cta' } = Astro.props;
+const navLinks = Astro.props.navLinks ?? [
+  { label: 'How It Works', href: '#how-it-works' },
+  { label: 'What You Get', href: '#what-you-get' },
+  { label: 'Insights', href: '/articles' },
+];
 const theme = getBrandTheme();
 const googleFontUrl = theme.googleFont
   ? `https://fonts.googleapis.com/css2?family=${theme.googleFont.replace(/ /g, '+')}:wght@400;600;700&display=swap`
@@ -342,11 +355,9 @@ const googleFontUrl = theme.googleFont
           {theme.logoHtml ? <Fragment set:html={theme.logoHtml} /> : <span class="nav-logo-text">{theme.name}</span>}
         </a>
         <div class="nav-links">
-          <a href="#how-it-works">How It Works</a>
-          <a href="#what-you-get">What You Get</a>
-          <a href="/articles">Insights</a>
+          {navLinks.map(link => <a href={link.href}>{link.label}</a>)}
         </div>
-        <a href="#cta" class="nav-cta desktop-only">Get Early Access</a>
+        <a href={ctaHref} class="nav-cta desktop-only">{ctaLabel}</a>
         <button class="nav-hamburger" id="hamburger" aria-label="Menu">
           <span></span>
           <span></span>
@@ -357,10 +368,8 @@ const googleFontUrl = theme.googleFont
 
     <!-- Mobile menu -->
     <div class="mobile-menu" id="mobileMenu">
-      <a href="#how-it-works">How It Works</a>
-      <a href="#what-you-get">What You Get</a>
-      <a href="/articles">Insights</a>
-      <a href="#cta">Get Early Access</a>
+      {navLinks.map(link => <a href={link.href}>{link.label}</a>)}
+      <a href={ctaHref}>{ctaLabel}</a>
     </div>
 
     <slot />
@@ -373,9 +382,7 @@ const googleFontUrl = theme.googleFont
         </a>
       </div>
       <div class="footer-links">
-        <a href="/articles">Insights</a>
-        <a href="#how-it-works">How It Works</a>
-        <a href="#what-you-get">What You Get</a>
+        {navLinks.map(link => <a href={link.href}>{link.label}</a>)}
       </div>
       <span class="footer-copy">&copy; {new Date().getFullYear()} {theme.name}. All rights reserved.</span>
     </footer>
