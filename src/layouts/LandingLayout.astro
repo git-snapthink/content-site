@@ -31,7 +31,7 @@ const googleFontUrl = theme.googleFont
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href={theme.faviconPath ?? '/favicon.svg'} />
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
     {googleFontUrl && <link rel="preconnect" href="https://fonts.googleapis.com" />}
