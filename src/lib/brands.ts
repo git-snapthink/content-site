@@ -32,7 +32,8 @@ const brands: Record<string, BrandTheme> = {
   },
   'jason-c-lewis': {
     name: 'Jason C. Lewis',
-    displayFont: 'system-ui',
+    displayFont: 'Orbitron',
+    googleFont: 'Orbitron',
     bg: '#ffffff',
     surface: '#f9fafb',
     border: '#e5e7eb',
@@ -42,7 +43,7 @@ const brands: Record<string, BrandTheme> = {
     accent: '#c1d42f',
     accentText: '#1a1a1a',
     faviconPath: '/favicon-jcl.svg',
-    logoHtml: `<svg xmlns="http://www.w3.org/2000/svg" width="6" height="28" viewBox="0 0 24 48"><rect x="8" y="0" width="8" height="48" rx="2" fill="#c1d42f"/></svg><span style="font-family:system-ui,sans-serif;font-size:18px;font-weight:600;color:#1a1a1a;letter-spacing:-0.02em">Jason C. Lewis</span>`,
+    logoHtml: `<svg xmlns="http://www.w3.org/2000/svg" width="6" height="28" viewBox="0 0 24 48"><rect x="8" y="0" width="8" height="48" rx="2" fill="#c1d42f"/></svg><span style="font-family:'Orbitron',sans-serif;font-size:18px;font-weight:600;color:#1a1a1a;letter-spacing:-0.02em">Jason C. Lewis</span>`,
   },
 };
 
