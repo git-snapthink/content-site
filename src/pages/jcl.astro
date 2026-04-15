@@ -1,0 +1,650 @@
+---
+---
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Operator's Log — Jason C. Lewis</title>
+<meta name="description" content="Practical AI perspective from someone who's been building and advising for 14 years. Weekly newsletter from the operator's seat." />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Chakra+Petch:wght@400;500;600&family=Orbitron:wght@600;700&display=swap" rel="stylesheet" />
+<style>
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root {
+  --bg-primary: #fafaf8;
+  --bg-alt: #f2f2ee;
+  --bg-card: #ffffff;
+  --bg-dark: #111113;
+  --bg-dark-card: #1a1a1c;
+  --bg-dark-subtle: #222225;
+  --text-primary: #1a1a1a;
+  --text-body: #3a3a3a;
+  --text-muted: #71716b;
+  --text-faint: #a1a19b;
+  --text-on-dark: #f5f5f0;
+  --text-body-dark: #b8b8b0;
+  --text-muted-dark: #888880;
+  --text-faint-dark: #555558;
+  --accent: #c1d42f;
+  --accent-hover: #d4e635;
+  --accent-pressed: #a8b828;
+  --accent-tint: rgba(193, 212, 47, 0.09);
+  --accent-glow: rgba(193, 212, 47, 0.19);
+  --cta-text: #111113;
+  --border: #e2e2de;
+  --border-hover: #c1d42f;
+  --border-dark: #333335;
+  --max-content: 1120px;
+  --max-narrow: 720px;
+  --max-cards: 1040px;
+  --max-twocol: 880px;
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  background: var(--bg-primary);
+  color: var(--text-body);
+  font-family: 'Chakra Petch', system-ui, -apple-system, sans-serif;
+  font-size: 17px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+img { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; }
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  padding: 0 64px;
+  background: transparent;
+  transition: background 0.3s ease;
+}
+.nav.on-dark .nav-brand { color: var(--text-on-dark); }
+.nav.scrolled {
+  background: rgba(250, 250, 248, 0.9);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+.nav.scrolled .nav-brand { color: var(--text-primary); }
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Audiowide', system-ui, sans-serif;
+  font-size: 18px;
+  line-height: 1.15;
+  letter-spacing: 0.11em;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
+}
+.nav-brand-bar {
+  display: block;
+  width: 3px;
+  height: 20px;
+  background: var(--accent);
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+.nav-cta {
+  padding: 8px 20px;
+  border-radius: 6px;
+  background: var(--accent);
+  color: var(--cta-text);
+  font-family: 'Chakra Petch', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+.nav-cta:hover { background: var(--accent-hover); transform: scale(1.02); }
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero {
+  background: var(--bg-dark);
+  padding: 140px 64px 120px;
+  position: relative;
+  overflow: hidden;
+}
+.hero-inner {
+  max-width: var(--max-content);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 60px;
+  align-items: center;
+}
+.hero-content { position: relative; z-index: 2; }
+.credential-pill {
+  display: inline-block;
+  padding: 6px 16px;
+  border: 1px solid var(--border-dark);
+  border-radius: 20px;
+  font-family: 'Audiowide', system-ui, sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted-dark);
+  margin-bottom: 32px;
+}
+.hero h1 {
+  font-family: 'Orbitron', system-ui, sans-serif;
+  font-size: 56px;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--text-on-dark);
+  margin-bottom: 24px;
+}
+.hero h1 .accent { color: var(--accent); }
+.hero-sub {
+  font-family: 'Chakra Petch', system-ui, sans-serif;
+  font-size: 20px;
+  line-height: 1.6;
+  color: var(--text-muted-dark);
+  max-width: 540px;
+  margin-bottom: 40px;
+}
+.hero-form { display: flex; gap: 8px; margin-bottom: 16px; }
+.hero-input {
+  width: 320px;
+  padding: 14px 18px;
+  background: var(--bg-dark-card);
+  border: 1px solid var(--border-dark);
+  border-radius: 8px;
+  font-family: 'Chakra Petch', system-ui, sans-serif;
+  font-size: 16px;
+  color: var(--text-on-dark);
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+.hero-input::placeholder { color: var(--text-faint-dark); }
+.hero-input:focus { border-color: var(--accent); }
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 32px;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent);
+  color: var(--cta-text);
+  font-family: 'Chakra Petch', system-ui, sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+  white-space: nowrap;
+}
+.btn-primary:hover { background: var(--accent-hover); transform: scale(1.02); box-shadow: 0 4px 16px rgba(193, 212, 47, 0.25); }
+.btn-primary:active { background: var(--accent-pressed); transform: scale(0.98); }
+.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+.hero-micro { font-size: 14px; line-height: 1.5; color: var(--text-faint-dark); }
+.hero-form-success {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--accent);
+  margin-bottom: 16px;
+}
+.hero-form-success.show { display: flex; }
+.hero-headshot {
+  width: 380px;
+  aspect-ratio: 3/4;
+  background: linear-gradient(135deg, #1a1a1c 0%, #222225 100%);
+  border-radius: 16px;
+  border: 2px solid var(--accent-glow);
+  box-shadow: 0 0 60px var(--accent-glow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.hero-headshot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 14px;
+}
+
+/* ============================================================
+   SECTIONS
+   ============================================================ */
+.section { padding: 120px 64px; }
+.section-white { background: var(--bg-card); }
+.section-alt { background: var(--bg-alt); }
+.section-inner { max-width: var(--max-content); margin: 0 auto; }
+.section-inner.narrow { max-width: var(--max-narrow); }
+.section-pill {
+  display: inline-block;
+  padding: 4px 14px;
+  border: 1px solid var(--accent);
+  border-radius: 20px;
+  font-family: 'Audiowide', system-ui, sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 32px;
+}
+h2 {
+  font-family: 'Orbitron', system-ui, sans-serif;
+  font-size: 36px;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+h2.on-dark { color: var(--text-on-dark); }
+h2 .accent { color: var(--accent); }
+.section-sub { font-size: 18px; line-height: 1.6; color: var(--text-muted); }
+.text-center { text-align: center; }
+
+/* Problem */
+.problem-body { max-width: 640px; margin: 48px auto 0; text-align: left; }
+.problem-body p { margin-bottom: 24px; color: var(--text-body); }
+.problem-body p:last-child { color: var(--text-primary); font-weight: 500; margin-bottom: 0; }
+
+/* Cards */
+.card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: var(--max-cards); margin: 0 auto; }
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 32px;
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 20px rgba(0,0,0,0.04); }
+.card-icon {
+  width: 44px; height: 44px;
+  background: var(--accent-tint);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 20px;
+}
+.card-icon svg { width: 24px; height: 24px; stroke: var(--accent); stroke-width: 1.5; fill: none; }
+h3 {
+  font-family: 'Orbitron', system-ui, sans-serif;
+  font-size: 20px; font-weight: 600; line-height: 1.3;
+  letter-spacing: -0.01em; color: var(--text-primary);
+  margin-bottom: 12px;
+}
+.card p { font-size: 15px; line-height: 1.65; color: var(--text-body); }
+
+/* Career */
+.career-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+.career-block { border-left: 3px solid var(--accent); padding-left: 24px; }
+.career-label { font-family: 'Audiowide', system-ui, sans-serif; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+.career-title { font-family: 'Orbitron', system-ui, sans-serif; font-size: 18px; font-weight: 600; line-height: 1.3; color: var(--text-primary); margin-bottom: 12px; }
+.career-body { font-size: 15px; line-height: 1.6; color: var(--text-body); margin-bottom: 16px; }
+.career-metric { display: inline-block; font-family: 'Orbitron', system-ui, sans-serif; font-size: 16px; font-weight: 600; color: var(--text-primary); background: var(--accent-tint); padding: 6px 14px; border-radius: 6px; }
+.section-divider { width: 80px; height: 2px; background: var(--accent); margin: 64px auto; border-radius: 1px; }
+
+/* Samples */
+.sample-header { font-family: 'Orbitron', system-ui, sans-serif; font-size: 24px; font-weight: 600; color: var(--text-primary); text-align: center; margin-bottom: 40px; }
+.sample-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px; }
+.sample-card { background: #f8f8f5; border: 1px solid var(--border); border-radius: 12px; padding: 32px; }
+.sample-label { font-family: 'Audiowide', system-ui, sans-serif; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 16px; }
+.sample-title { font-family: 'Orbitron', system-ui, sans-serif; font-size: 18px; font-weight: 600; line-height: 1.3; color: var(--text-primary); margin-bottom: 12px; }
+.sample-body { font-size: 15px; line-height: 1.6; color: var(--text-body); }
+.sample-placeholder { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 8px; padding: 40px; text-align: center; color: var(--text-muted); font-size: 14px; margin-top: 16px; }
+
+/* Differentiation */
+.diff-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 48px; max-width: var(--max-twocol); margin: 0 auto; }
+.diff-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 36px; }
+.diff-header { font-family: 'Audiowide', system-ui, sans-serif; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; padding-bottom: 16px; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
+.diff-header.positive { color: var(--accent); }
+.diff-header.negative { color: var(--text-muted); }
+.diff-list { list-style: none; }
+.diff-list li { position: relative; padding-left: 28px; margin-bottom: 16px; font-size: 16px; line-height: 1.6; color: var(--text-body); }
+.diff-list li:last-child { margin-bottom: 0; }
+.diff-list li .marker { position: absolute; left: 0; font-weight: 700; }
+.diff-list.positive li .marker { color: var(--accent); }
+.diff-list.negative li .marker { color: var(--text-faint); }
+.diff-list.negative li { color: var(--text-muted); }
+
+/* FAQ */
+.faq-list { max-width: var(--max-narrow); margin: 0 auto; }
+.faq-item { border-bottom: 1px solid var(--border); }
+.faq-item:first-child { border-top: 1px solid var(--border); }
+.faq-item summary { display: flex; justify-content: space-between; align-items: center; padding: 24px 0; cursor: pointer; font-family: 'Chakra Petch', system-ui, sans-serif; font-size: 17px; font-weight: 600; color: var(--text-primary); list-style: none; user-select: none; }
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-chevron { width: 16px; height: 16px; stroke: var(--text-muted); stroke-width: 2; fill: none; flex-shrink: 0; margin-left: 16px; transition: transform 0.2s ease; }
+.faq-item[open] .faq-chevron { transform: rotate(90deg); }
+.faq-answer { padding: 0 0 24px; font-size: 16px; line-height: 1.7; color: var(--text-body); }
+
+/* Final CTA */
+.final-cta { background: var(--bg-dark); padding: 120px 64px; text-align: center; position: relative; overflow: hidden; }
+.final-cta-inner { position: relative; z-index: 2; max-width: 700px; margin: 0 auto; }
+.final-cta h2 { font-size: 40px; font-weight: 700; margin-bottom: 16px; }
+.final-cta .section-sub { color: var(--text-muted-dark); letter-spacing: 0.02em; margin-bottom: 40px; }
+.final-form { display: flex; justify-content: center; gap: 8px; margin-bottom: 16px; }
+.final-input { width: 360px; padding: 14px 18px; background: var(--bg-dark-card); border: 1px solid var(--border-dark); border-radius: 8px; font-family: 'Chakra Petch', system-ui, sans-serif; font-size: 16px; color: var(--text-on-dark); outline: none; transition: border-color 0.15s ease; }
+.final-input::placeholder { color: var(--text-faint-dark); }
+.final-input:focus { border-color: var(--accent); }
+.final-micro { font-size: 14px; line-height: 1.5; color: var(--text-faint-dark); margin-bottom: 24px; }
+.final-form-success {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--accent);
+  margin-bottom: 16px;
+}
+.final-form-success.show { display: flex; }
+.link-secondary { font-size: 15px; font-weight: 500; color: var(--text-muted-dark); transition: color 0.15s ease; }
+.link-secondary:hover { color: var(--accent); }
+.link-secondary .arrow { display: inline-block; transition: transform 0.15s ease; }
+.link-secondary:hover .arrow { transform: translateX(4px); }
+
+/* Footer */
+.footer { background: var(--bg-dark); padding: 40px 64px; border-top: 1px solid var(--bg-dark-subtle); display: flex; justify-content: space-between; align-items: center; }
+.footer-brand { display: flex; align-items: center; gap: 10px; font-family: 'Audiowide', system-ui, sans-serif; font-size: 14px; letter-spacing: 0.11em; color: #71716b; }
+.footer-right { display: flex; align-items: center; gap: 16px; }
+.footer-social svg { width: 20px; height: 20px; stroke: var(--text-faint-dark); fill: none; stroke-width: 1.5; transition: stroke 0.15s ease; }
+.footer-social:hover svg { stroke: var(--accent); }
+.footer-copy { font-size: 12px; color: var(--text-faint-dark); }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 767px) {
+  .nav { padding: 0 20px; }
+  .hero { padding: 100px 20px 80px; }
+  .hero-inner { grid-template-columns: 1fr; gap: 40px; }
+  .hero h1 { font-size: 36px; }
+  .hero-sub { font-size: 17px; }
+  .hero-form { flex-direction: column; }
+  .hero-input { width: 100%; }
+  .btn-primary { width: 100%; justify-content: center; }
+  .hero-headshot { width: 280px; margin: 0 auto; }
+  .section { padding: 80px 20px; }
+  h2 { font-size: 28px; }
+  .card-grid { grid-template-columns: 1fr; gap: 16px; }
+  .career-grid { grid-template-columns: 1fr; }
+  .sample-grid { grid-template-columns: 1fr; }
+  .diff-grid { grid-template-columns: 1fr; gap: 24px; }
+  .final-cta { padding: 80px 20px; }
+  .final-cta h2 { font-size: 28px; }
+  .final-form { flex-direction: column; align-items: center; }
+  .final-input { width: 100%; }
+  .final-form .btn-primary { width: 100%; }
+  .footer { flex-direction: column; gap: 16px; text-align: center; padding: 32px 20px; }
+}
+
+.mb-16 { margin-bottom: 16px; }
+.mb-48 { margin-bottom: 48px; }
+.mb-56 { margin-bottom: 56px; }
+</style>
+</head>
+
+<body>
+
+<!-- NAV -->
+<nav class="nav on-dark" id="mainNav">
+  <a href="#" class="nav-brand"><span class="nav-brand-bar"></span>jasonclewis</a>
+  <button class="nav-cta" onclick="document.getElementById('heroEmailInput').focus(); document.getElementById('heroSection').scrollIntoView({behavior:'smooth'})">Subscribe</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="heroSection">
+  <div class="hero-inner">
+    <div class="hero-content">
+      <div class="credential-pill">Former Gartner Analyst &middot; Head of AWS Startups NA</div>
+      <h1>Fourteen years in AI. Here's what I'm learning from <span class="accent">the trenches.</span></h1>
+      <p class="hero-sub">Every week I share what I'm actually seeing — what's working, what's overhyped, and where I'd focus if I were making your decisions. Grounded in real operator experience at AWS and Gartner. Practical by design.</p>
+      <div class="hero-form" id="heroFormWrap">
+        <input type="email" class="hero-input" id="heroEmailInput" placeholder="Your best email" aria-label="Email address" />
+        <button class="btn-primary" id="heroSubmitBtn" onclick="handleSubscribe('heroEmailInput','heroFormWrap','heroSuccess','heroSubmitBtn')">Subscribe to Operator's Log</button>
+      </div>
+      <div class="hero-form-success" id="heroSuccess">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+        You're on the list. First issue coming soon.
+      </div>
+      <p class="hero-micro">Free. Weekly. 5-minute read. Unsubscribe anytime.</p>
+    </div>
+    <div class="hero-headshot" role="img" aria-label="Jason C. Lewis">
+      <img src="/images/jason_tie.png" alt="Jason C. Lewis professional headshot" onerror="this.parentElement.style.background='linear-gradient(135deg,#1a1a1c 0%,#222225 100%)'" />
+    </div>
+  </div>
+</section>
+
+<!-- WHY THIS EXISTS -->
+<section class="section section-white">
+  <div class="section-inner narrow text-center">
+    <div class="section-pill">Why This Exists</div>
+    <h2>AI is moving fast. Knowing what actually matters for your business is genuinely hard.</h2>
+    <div class="problem-body">
+      <p>Every week there's a new model, a new framework, a new capability being called a game-changer. Some of it is. Most of it needs context before you know how to respond. The signal-to-noise ratio is rough right now.</p>
+      <p>I've spent 14 years in roles where I had to know the difference — advising organizations at Gartner, supporting the fastest-scaling AI startups at AWS, and building products myself. I've seen what works in production and what looks good in a demo.</p>
+      <p>Operator's Log is my attempt to share that perspective. Not the loudest take. Not a vendor pitch. Just honest, grounded observations from someone who's been accountable for real AI outcomes — and is still in the middle of it.</p>
+      <p>If you're making real decisions about AI — for your team, your product, or your career — I hope it's useful.</p>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT YOU GET -->
+<section class="section section-alt">
+  <div class="section-inner text-center">
+    <div class="section-pill">What You Get</div>
+    <h2 class="mb-16">One email. Every week. Practical AI perspective from the operator's seat.</h2>
+    <p class="section-sub mb-56">Here's what you'll find in every edition of Operator's Log.</p>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/></svg></div>
+        <h3>What's Actually Working</h3>
+        <p>I lead support for the fastest-scaling AI startups in North America. I see which AI approaches ship to production and which die in pilot. You get that intel weekly, without the vendor spin.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></div>
+        <h3>What to Bet On Next</h3>
+        <p>Every week surfaces a new "must-have" AI capability. Most are noise. I tell you which ones are worth your time, your budget, and your team's attention. Grounded in patterns across 14,000+ organizations.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
+        <h3>How to Build With It</h3>
+        <p>Not theory. I'm a full-stack developer shipping AI-powered products right now. The newsletter covers what works in production, what breaks at scale, and what the demos conveniently leave out.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY LISTEN -->
+<section class="section section-white">
+  <div class="section-inner text-center">
+    <div class="section-pill">Why Listen</div>
+    <h2 class="mb-56">This isn't a side project. It's 14 years of operating leverage.</h2>
+    <div class="career-grid">
+      <div class="career-block">
+        <div class="career-label">AWS Startups</div>
+        <div class="career-title">Head of Premium Support, North America</div>
+        <p class="career-body">I lead support for the most prominent AI startups scaling across North America. I see what ships, what stalls, and what breaks at scale. Every week.</p>
+        <span class="career-metric">$240M+ in commitments secured</span>
+      </div>
+      <div class="career-block">
+        <div class="career-label">Gartner</div>
+        <div class="career-title">Director, Global Data &amp; Analytics Practice</div>
+        <p class="career-body">Directed AI and data strategy for the world's largest tech advisory. Advised CIOs and CTOs across every industry on where to invest and where to wait.</p>
+        <span class="career-metric">14,000+ organizations advised</span>
+      </div>
+      <div class="career-block">
+        <div class="career-label">Founder &amp; Advisor</div>
+        <div class="career-title">Founded, Built, Sold, Repeated</div>
+        <p class="career-body">Multiple technology ventures from founding through exit. Venture advisor. Interim CxO. Full-stack developer. I don't just analyze AI. I ship it.</p>
+        <span class="career-metric">32% enterprise growth delivered</span>
+      </div>
+    </div>
+    <div class="section-divider"></div>
+    <div class="sample-header">Read before you subscribe.</div>
+    <div class="sample-grid">
+      <div class="sample-card">
+        <div class="sample-label">From a Recent Edition</div>
+        <div class="sample-title">The Execution Gap Nobody Talks About</div>
+        <p class="sample-body">Every enterprise I advised at Gartner had an AI strategy. Fewer than 15% had AI execution. The gap wasn't technical. It was organizational. The teams building AI products reported to people who'd never shipped software. The people approving AI budgets couldn't distinguish a proof-of-concept from a production system.</p>
+      </div>
+      <div class="sample-card">
+        <div class="sample-label">From LinkedIn</div>
+        <div class="sample-placeholder">[LinkedIn post screenshot]<br /><br />Replace with actual screenshot before launch.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHO THIS IS FOR -->
+<section class="section section-alt">
+  <div class="section-inner text-center">
+    <div class="section-pill">Who This Is For</div>
+    <h2 class="mb-56">Built for builders. Not browsers.</h2>
+    <div class="diff-grid">
+      <div class="diff-card">
+        <div class="diff-header positive">This is for you if</div>
+        <ul class="diff-list positive">
+          <li><span class="marker">&check;</span><span>You're a founder building with AI and tired of guessing which capabilities are real</span></li>
+          <li><span class="marker">&check;</span><span>You make AI adoption decisions for your team and need to be right, not just current</span></li>
+          <li><span class="marker">&check;</span><span>You're a solopreneur using AI as leverage and need to know what's worth your limited time</span></li>
+          <li><span class="marker">&check;</span><span>You're positioning yourself as AI-fluent for your next career move and want the real playbook</span></li>
+          <li><span class="marker">&check;</span><span>You'd rather read one sharp perspective than scroll through fifty shallow ones</span></li>
+        </ul>
+      </div>
+      <div class="diff-card">
+        <div class="diff-header negative">Probably not for you if</div>
+        <ul class="diff-list negative">
+          <li><span class="marker">&times;</span><span>You want "5 ChatGPT hacks to 10x your productivity"</span></li>
+          <li><span class="marker">&times;</span><span>You're looking for prompt engineering tutorials</span></li>
+          <li><span class="marker">&times;</span><span>You prefer predictions over pattern recognition</span></li>
+          <li><span class="marker">&times;</span><span>You want daily dopamine, not weekly depth</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section section-white">
+  <div class="section-inner text-center">
+    <div class="section-pill">FAQ</div>
+    <h2 class="mb-48">Before you decide.</h2>
+    <div class="faq-list">
+      <details class="faq-item" open>
+        <summary><span>Another AI newsletter. Why this one?</span><svg class="faq-chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></summary>
+        <div class="faq-answer">Most AI newsletters are written by people covering AI from the outside. This one is written by someone who leads AI startup support at AWS, spent years directing AI strategy for 14,000+ organizations at Gartner, and still ships AI products as a full-stack developer. I'm not a journalist or a pundit — I'm an operator, and that shapes everything I write.</div>
+      </details>
+      <details class="faq-item">
+        <summary><span>How often will I hear from you?</span><svg class="faq-chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></summary>
+        <div class="faq-answer">Once per week. Five minutes. One focused piece. No padding, no filler, no "bonus" emails you didn't ask for.</div>
+      </details>
+      <details class="faq-item">
+        <summary><span>What will I actually learn?</span><svg class="faq-chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></summary>
+        <div class="faq-answer">Which AI capabilities are delivering real ROI (and which are vaporware). Where to invest your team's time next quarter. How to build with AI without rebuilding everything. What the gap between AI strategy and AI execution actually looks like from inside.</div>
+      </details>
+      <details class="faq-item">
+        <summary><span>Is this a funnel for something?</span><svg class="faq-chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></summary>
+        <div class="faq-answer">No. Free perspective from an operator. If it's useful, share it. If it's not, unsubscribe. No drip campaigns, no upsells, no "limited time offers." Your email, one newsletter, nothing else.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta">
+  <div class="final-cta-inner">
+    <h2 class="on-dark">If you want a grounded perspective on AI from someone still <span class="accent">in the work</span> — I'd be glad to have you along.</h2>
+    <p class="section-sub" style="color:var(--text-muted-dark);margin:16px 0 40px;">Free. Weekly. AI from the trenches.</p>
+    <div class="final-form" id="finalFormWrap">
+      <input type="email" class="final-input" id="finalEmailInput" placeholder="Your best email" aria-label="Email address" />
+      <button class="btn-primary" id="finalSubmitBtn" onclick="handleSubscribe('finalEmailInput','finalFormWrap','finalSuccess','finalSubmitBtn')">Subscribe to Operator's Log</button>
+    </div>
+    <div class="final-form-success" id="finalSuccess">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+      You're on the list. First issue coming soon.
+    </div>
+    <p class="final-micro">5-minute read. Unsubscribe anytime. No spam. No sales pitch. Ever.</p>
+    <a href="https://www.linkedin.com/in/jasonclewis/" target="_blank" rel="noopener" class="link-secondary">Or follow on LinkedIn <span class="arrow">&rarr;</span></a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <span class="footer-brand"><span class="nav-brand-bar" style="height:16px;opacity:0.5;"></span>jasonclewis</span>
+  <div class="footer-right">
+    <a href="https://www.linkedin.com/in/jasonclewis/" target="_blank" rel="noopener" class="footer-social" aria-label="LinkedIn"><svg viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg></a>
+    <a href="https://jasonclewis.substack.com" target="_blank" rel="noopener" class="footer-social" aria-label="Substack"><svg viewBox="0 0 24 24"><path d="M4 4h16M4 8h16M4 12l8 6 8-6"/></svg></a>
+    <span class="footer-copy">&copy; 2026 Jason C. Lewis. All rights reserved.</span>
+  </div>
+</footer>
+
+<script is:inline>
+  // ── Nav scroll behaviour ──────────────────────────────────
+  const nav = document.getElementById('mainNav');
+  const hero = document.getElementById('heroSection');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        nav.classList.add('on-dark');
+        nav.classList.remove('scrolled');
+      } else {
+        nav.classList.remove('on-dark');
+        nav.classList.add('scrolled');
+      }
+    });
+  }, { threshold: 0, rootMargin: '-64px 0px 0px 0px' });
+  observer.observe(hero);
+
+  // ── Substack subscribe ────────────────────────────────────
+  async function handleSubscribe(inputId, formWrapId, successId, btnId) {
+    const input = document.getElementById(inputId);
+    const btn = document.getElementById(btnId);
+    const email = input?.value?.trim();
+    if (!email) { input?.focus(); return; }
+
+    btn.disabled = true;
+
+    try {
+      const res = await fetch('/api/subscribe-newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+
+      if (res.ok) {
+        document.getElementById(formWrapId).style.display = 'none';
+        document.getElementById(successId).classList.add('show');
+      } else {
+        const data = await res.json().catch(() => ({}));
+        alert(data.error || 'Something went wrong. Please try again.');
+        btn.disabled = false;
+      }
+    } catch {
+      alert('Network error. Please try again.');
+      btn.disabled = false;
+    }
+  }
+</script>
+
+</body>
+</html>
