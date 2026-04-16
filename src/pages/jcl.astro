@@ -600,7 +600,7 @@ h3 {
 </footer>
 
 <script is:inline>
-  // ── Substack subscribe ────────────────────────────────────
+  // ── Substack subscribe (direct browser POST to bypass Cloudflare) ──
   async function handleSubscribe(inputId, formWrapId, successId, btnId) {
     const input = document.getElementById(inputId);
     const btn = document.getElementById(btnId);
@@ -610,23 +610,31 @@ h3 {
     btn.disabled = true;
 
     try {
-      const res = await fetch('/api/subscribe-newsletter', {
+      const res = await fetch('https://jasonclewis.substack.com/api/v1/free', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({
+          email: email,
+          first_url: window.location.href,
+          current_url: window.location.href,
+          current_referrer: document.referrer || '',
+          source: 'custom_embed',
+          public_brand: 'jason-c-lewis'
+        }),
       });
 
       if (res.ok) {
         document.getElementById(formWrapId).style.display = 'none';
         document.getElementById(successId).classList.add('show');
       } else {
-        const data = await res.json().catch(() => ({}));
-        alert(data.error || 'Something went wrong. Please try again.');
+        alert('Something went wrong. Please try again.');
         btn.disabled = false;
       }
     } catch {
-      alert('Network error. Please try again.');
-      btn.disabled = false;
+      // CORS or network error — fall back to opening Substack directly
+      window.open('https://jasonclewis.substack.com/subscribe?email=' + encodeURIComponent(email), '_blank');
+      document.getElementById(formWrapId).style.display = 'none';
+      document.getElementById(successId).classList.add('show');
     }
   }
 </script>
