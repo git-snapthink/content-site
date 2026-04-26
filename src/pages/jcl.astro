@@ -146,7 +146,7 @@ a { color: inherit; text-decoration: none; }
   position: relative;
   overflow: hidden;
 }
-/* Diffuse lime gradient blob in the upper-right of the hero */
+/* Diffuse cyan gradient blob in the upper-right of the hero */
 .hero-glow-blob {
   position: absolute;
   z-index: 0;
@@ -155,10 +155,24 @@ a { color: inherit; text-decoration: none; }
   opacity: 0.32;
   background: rgb(92, 206, 255);
   pointer-events: none;
-  width: 1000px;
-  height: 1000px;
-  top: -400px;
-  right: -500px;
+  width: 750px;
+  height: 750px;
+  top: -300px;
+  right: -375px;
+}
+/* Smaller cyan blob in the bottom-left, just barely brushing the hero text */
+.hero-glow-blob-bl {
+  position: absolute;
+  z-index: 0;
+  filter: blur(120px);
+  border-radius: 9999px;
+  opacity: 0.28;
+  background: rgb(92, 206, 255);
+  pointer-events: none;
+  width: 536px;
+  height: 536px;
+  bottom: -198px;
+  left: -243px;
 }
 .hero-inner {
   position: relative;
@@ -635,7 +649,8 @@ h3 {
   .btn-primary { width: 100%; justify-content: center; }
   .hero-headshot-col { justify-content: center; }
   .headshot-card { width: 280px; }
-  .hero-glow-blob { width: 600px; height: 600px; top: -200px; right: -200px; }
+  .hero-glow-blob { width: 450px; height: 450px; top: -150px; right: -150px; }
+  .hero-glow-blob-bl { width: 382px; height: 382px; bottom: -135px; left: -153px; }
   .final-glow-blob { width: 600px; height: 600px; bottom: -200px; left: -200px; }
   .section { padding: 80px 20px; }
   h2 { font-size: 28px; }
@@ -668,6 +683,7 @@ h3 {
 <!-- HERO -->
 <section class="hero" id="heroSection">
   <div class="hero-glow-blob" aria-hidden="true"></div>
+  <div class="hero-glow-blob-bl" aria-hidden="true"></div>
   <div class="hero-inner">
     <div class="hero-content">
       <div class="credential-pill">Former Gartner Analyst &middot; Head of AWS Startups Support</div>
