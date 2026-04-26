@@ -604,6 +604,20 @@ h3 {
   bottom: -400px;
   left: -500px;
 }
+/* Matching cyan glow blob in the upper-right of the final CTA */
+.final-glow-blob-tr {
+  position: absolute;
+  z-index: 0;
+  filter: blur(120px);
+  border-radius: 9999px;
+  opacity: 0.32;
+  background: rgb(92, 206, 255);
+  pointer-events: none;
+  width: 1000px;
+  height: 1000px;
+  top: -400px;
+  right: -500px;
+}
 .final-cta h2 { font-size: 40px; font-weight: 700; margin-bottom: 16px; }
 .final-cta .section-sub { color: var(--text-muted-dark); letter-spacing: 0.02em; margin-bottom: 40px; }
 .final-form { display: flex; justify-content: center; gap: 8px; margin-bottom: 16px; }
@@ -652,6 +666,7 @@ h3 {
   .hero-glow-blob { width: 450px; height: 450px; top: -150px; right: -150px; }
   .hero-glow-blob-bl { width: 382px; height: 382px; bottom: -135px; left: -153px; }
   .final-glow-blob { width: 600px; height: 600px; bottom: -200px; left: -200px; }
+  .final-glow-blob-tr { width: 600px; height: 600px; top: -200px; right: -200px; }
   .section { padding: 80px 20px; }
   h2 { font-size: 28px; }
   .card-grid { grid-template-columns: 1fr; gap: 16px; }
@@ -881,6 +896,7 @@ h3 {
 <!-- FINAL CTA -->
 <section class="final-cta">
   <div class="final-glow-blob" aria-hidden="true"></div>
+  <div class="final-glow-blob-tr" aria-hidden="true"></div>
   <div class="final-cta-inner">
     <h2 class="on-dark">If you want a grounded perspective on AI from someone still <span class="accent">in the work</span> — I'd be glad to have you along.</h2>
     <p class="section-sub" style="color:var(--text-muted-dark);margin:16px 0 40px;">Free. Weekly. AI from the trenches.</p>
