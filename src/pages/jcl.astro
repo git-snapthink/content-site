@@ -45,6 +45,27 @@ const gaId = import.meta.env.PUBLIC_GA_MEASUREMENT_ID;
   --max-narrow: 720px;
   --max-cards: 1040px;
   --max-twocol: 880px;
+
+  /* Tactical-frame tokens (ported from glow4 hero) */
+  --frame-gap: 16px;
+  --corner-len: 22%;
+  --tick-len: 6%;
+  --line-opacity: 0.22;
+  --line-width: 1.5px;
+  --light-duration: 2.4s;
+  --chase-duration: 1s;
+  --pattern-gap: 2s;
+  --light-len: 55%;
+  --light-thick: 2px;
+  --light-blur: 3px;
+  --light-opacity: 1;
+  --desync: 0;
+  --rail-extend-out: 60px;
+  --rail-extend-in: 0px;
+  --glow-color: #c1d42f;
+  --light-end: 181.82%;
+  --master-duration: 18.20s;
+  --bracket-color: rgba(245, 245, 240, 0.22);
 }
 
 /* ============================================================
@@ -125,15 +146,31 @@ a { color: inherit; text-decoration: none; }
   position: relative;
   overflow: hidden;
 }
+/* Diffuse lime gradient blob in the upper-right of the hero */
+.hero-glow-blob {
+  position: absolute;
+  z-index: 0;
+  filter: blur(120px);
+  border-radius: 9999px;
+  opacity: 0.32;
+  background: rgb(92, 206, 255);
+  pointer-events: none;
+  width: 1000px;
+  height: 1000px;
+  top: -400px;
+  right: -500px;
+}
 .hero-inner {
+  position: relative;
   max-width: var(--max-content);
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 3fr 2fr;
-  gap: 60px;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 44px;
   align-items: center;
 }
 .hero-content { position: relative; z-index: 2; }
+.hero-headshot-col { position: relative; display: flex; justify-content: flex-end; }
 .credential-pill {
   display: block;
   text-align: center;
@@ -212,24 +249,223 @@ a { color: inherit; text-decoration: none; }
   margin-bottom: 16px;
 }
 .hero-form-success.show { display: flex; }
-.hero-headshot {
+/* ── Tactical bracket frame around the headshot (ported from glow4) ── */
+.headshot-frame {
+  position: relative;
+  padding: var(--frame-gap);
+  display: inline-block;
+}
+.frame-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+  pointer-events: none;
+  z-index: 0;
+}
+.frame-lines path {
+  stroke: var(--bracket-color);
+  stroke-width: var(--line-width);
+  fill: none;
+  vector-effect: non-scaling-stroke;
+}
+.light-rail {
+  position: absolute;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+  opacity: var(--light-opacity);
+}
+.light-rail::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(var(--gradient-angle, 90deg), transparent 0%, var(--glow-color) 50%, transparent 100%);
+  filter: drop-shadow(0 0 var(--light-blur) var(--glow-color));
+}
+.light-rail.tl { top: 0; left: calc(-1 * var(--rail-extend-out)); width: calc(var(--corner-len) + var(--rail-extend-out) + var(--rail-extend-in)); height: var(--light-thick); }
+.light-rail.tl::before { width: var(--light-len); height: 100%; --gradient-angle: 90deg; animation: travel-h-pattern var(--master-duration) linear infinite; }
+.light-rail.tr { top: calc(-1 * var(--rail-extend-out)); right: 0; width: var(--light-thick); height: calc(var(--corner-len) + var(--rail-extend-out) + var(--rail-extend-in)); }
+.light-rail.tr::before { width: 100%; height: var(--light-len); --gradient-angle: 180deg; animation: travel-v-pattern var(--master-duration) linear infinite; animation-delay: calc(var(--light-duration) * var(--desync, 0) * -0.25); }
+.light-rail.br { bottom: 0; right: calc(-1 * var(--rail-extend-out)); width: calc(var(--corner-len) + var(--rail-extend-out) + var(--rail-extend-in)); height: var(--light-thick); }
+.light-rail.br::before { width: var(--light-len); height: 100%; right: 0; left: auto; --gradient-angle: 270deg; animation: travel-h-rev-pattern var(--master-duration) linear infinite; animation-delay: calc(var(--light-duration) * var(--desync, 0) * -0.5); }
+.light-rail.bl { bottom: calc(-1 * var(--rail-extend-out)); left: 0; width: var(--light-thick); height: calc(var(--corner-len) + var(--rail-extend-out) + var(--rail-extend-in)); }
+.light-rail.bl::before { width: 100%; height: var(--light-len); bottom: 0; top: auto; --gradient-angle: 0deg; animation: travel-v-rev-pattern var(--master-duration) linear infinite; animation-delay: calc(var(--light-duration) * var(--desync, 0) * -0.75); }
+
+/* Pattern keyframes — 6× cycle: all → V → H → chase TR → BR → BL with 2s rests.
+   Master = 3*L + 3*C + 4*G = 3*2.4 + 3*1 + 4*2 = 18.20s. */
+@keyframes travel-h-pattern {
+  0.000%   { transform: translateX(-100%); opacity: 0; }
+  1.319%   { opacity: 1; }
+  11.868%  { opacity: 1; }
+  13.187%  { transform: translateX(var(--light-end)); opacity: 0; }
+  13.197%  { transform: translateX(-100%); opacity: 0; }
+  24.176%  { transform: translateX(var(--light-end)); opacity: 0; }
+  24.186%  { transform: translateX(-100%); opacity: 0; }
+  37.363%  { transform: translateX(var(--light-end)); opacity: 0; }
+  37.373%  { transform: translateX(-100%); opacity: 0; }
+  48.352%  { transform: translateX(var(--light-end)); opacity: 0; }
+  48.362%  { transform: translateX(-100%); opacity: 0; }
+  49.681%  { opacity: 1; }
+  60.219%  { opacity: 1; }
+  61.538%  { transform: translateX(var(--light-end)); opacity: 0; }
+  61.548%  { transform: translateX(-100%); opacity: 0; }
+  72.527%  { transform: translateX(var(--light-end)); opacity: 0; }
+  72.537%  { transform: translateX(-100%); opacity: 0; }
+  78.022%  { transform: translateX(var(--light-end)); opacity: 0; }
+  78.032%  { transform: translateX(-100%); opacity: 0; }
+  83.516%  { transform: translateX(var(--light-end)); opacity: 0; }
+  83.526%  { transform: translateX(-100%); opacity: 0; }
+  89.011%  { transform: translateX(var(--light-end)); opacity: 0; }
+  89.021%  { transform: translateX(-100%); opacity: 0; }
+  100%     { transform: translateX(var(--light-end)); opacity: 0; }
+}
+@keyframes travel-v-pattern {
+  0.000%   { transform: translateY(-100%); opacity: 0; }
+  1.319%   { opacity: 1; }
+  11.868%  { opacity: 1; }
+  13.187%  { transform: translateY(var(--light-end)); opacity: 0; }
+  13.197%  { transform: translateY(-100%); opacity: 0; }
+  24.176%  { transform: translateY(var(--light-end)); opacity: 0; }
+  24.186%  { transform: translateY(-100%); opacity: 0; }
+  25.505%  { opacity: 1; }
+  36.044%  { opacity: 1; }
+  37.363%  { transform: translateY(var(--light-end)); opacity: 0; }
+  37.373%  { transform: translateY(-100%); opacity: 0; }
+  48.352%  { transform: translateY(var(--light-end)); opacity: 0; }
+  48.362%  { transform: translateY(-100%); opacity: 0; }
+  61.538%  { transform: translateY(var(--light-end)); opacity: 0; }
+  61.548%  { transform: translateY(-100%); opacity: 0; }
+  72.527%  { transform: translateY(var(--light-end)); opacity: 0; }
+  72.537%  { transform: translateY(-100%); opacity: 1; }
+  78.022%  { transform: translateY(var(--light-end)); opacity: 1; }
+  78.032%  { transform: translateY(-100%); opacity: 0; }
+  83.516%  { transform: translateY(var(--light-end)); opacity: 0; }
+  83.526%  { transform: translateY(-100%); opacity: 0; }
+  89.011%  { transform: translateY(var(--light-end)); opacity: 0; }
+  89.021%  { transform: translateY(-100%); opacity: 0; }
+  100%     { transform: translateY(var(--light-end)); opacity: 0; }
+}
+@keyframes travel-h-rev-pattern {
+  0.000%   { transform: translateX(100%); opacity: 0; }
+  1.319%   { opacity: 1; }
+  11.868%  { opacity: 1; }
+  13.187%  { transform: translateX(calc(-1 * var(--light-end))); opacity: 0; }
+  13.197%  { transform: translateX(100%); opacity: 0; }
+  24.176%  { transform: translateX(calc(-1 * var(--light-end))); opacity: 0; }
+  24.186%  { transform: translateX(100%); opacity: 0; }
+  37.363%  { transform: translateX(calc(-1 * var(--light-end))); opacity: 0; }
+  37.373%  { transform: translateX(100%); opacity: 0; }
+  48.352%  { transform: translateX(calc(-1 * var(--light-end))); opacity: 0; }
+  48.362%  { transform: translateX(100%); opacity: 0; }
+  49.681%  { opacity: 1; }
+  60.219%  { opacity: 1; }
+  61.538%  { transform: translateX(calc(-1 * var(--light-end))); opacity: 0; }
+  61.548%  { transform: translateX(100%); opacity: 0; }
+  72.527%  { transform: translateX(calc(-1 * var(--light-end))); opacity: 0; }
+  72.537%  { transform: translateX(100%); opacity: 0; }
+  78.022%  { transform: translateX(calc(-1 * var(--light-end))); opacity: 0; }
+  78.032%  { transform: translateX(100%); opacity: 1; }
+  83.516%  { transform: translateX(calc(-1 * var(--light-end))); opacity: 1; }
+  83.526%  { transform: translateX(100%); opacity: 0; }
+  89.011%  { transform: translateX(calc(-1 * var(--light-end))); opacity: 0; }
+  89.021%  { transform: translateX(100%); opacity: 0; }
+  100%     { transform: translateX(calc(-1 * var(--light-end))); opacity: 0; }
+}
+@keyframes travel-v-rev-pattern {
+  0.000%   { transform: translateY(100%); opacity: 0; }
+  1.319%   { opacity: 1; }
+  11.868%  { opacity: 1; }
+  13.187%  { transform: translateY(calc(-1 * var(--light-end))); opacity: 0; }
+  13.197%  { transform: translateY(100%); opacity: 0; }
+  24.176%  { transform: translateY(calc(-1 * var(--light-end))); opacity: 0; }
+  24.186%  { transform: translateY(100%); opacity: 0; }
+  25.505%  { opacity: 1; }
+  36.044%  { opacity: 1; }
+  37.363%  { transform: translateY(calc(-1 * var(--light-end))); opacity: 0; }
+  37.373%  { transform: translateY(100%); opacity: 0; }
+  48.352%  { transform: translateY(calc(-1 * var(--light-end))); opacity: 0; }
+  48.362%  { transform: translateY(100%); opacity: 0; }
+  61.538%  { transform: translateY(calc(-1 * var(--light-end))); opacity: 0; }
+  61.548%  { transform: translateY(100%); opacity: 0; }
+  72.527%  { transform: translateY(calc(-1 * var(--light-end))); opacity: 0; }
+  72.537%  { transform: translateY(100%); opacity: 0; }
+  78.022%  { transform: translateY(calc(-1 * var(--light-end))); opacity: 0; }
+  78.032%  { transform: translateY(100%); opacity: 0; }
+  83.516%  { transform: translateY(calc(-1 * var(--light-end))); opacity: 0; }
+  83.526%  { transform: translateY(100%); opacity: 1; }
+  89.011%  { transform: translateY(calc(-1 * var(--light-end))); opacity: 1; }
+  89.021%  { transform: translateY(100%); opacity: 0; }
+  100%     { transform: translateY(calc(-1 * var(--light-end))); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .light-rail::before { animation: none; opacity: 0.5; }
+}
+
+/* Photo card with caption overlay */
+.headshot-card {
+  position: relative;
+  z-index: 2;
   width: 380px;
   aspect-ratio: 3/4;
-  background: linear-gradient(135deg, #1a1a1c 0%, #222225 100%);
-  border-radius: 16px;
-  border: 2px solid var(--accent-glow);
-  box-shadow: 0 0 60px var(--accent-glow);
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  border-radius: 16px;
+  background: linear-gradient(160deg, #1a1a1c 0%, #0e0e10 100%);
   overflow: hidden;
+  isolation: isolate;
 }
-.hero-headshot img {
+.headshot-photo { position: absolute; inset: 0; }
+.headshot-photo img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 14px;
+  opacity: 0.95;
+  mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
 }
+.headshot-fade {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 50%;
+  z-index: 1;
+  background: linear-gradient(to top, rgba(17,17,19,0.95) 0%, rgba(17,17,19,0.6) 50%, transparent 100%);
+}
+.headshot-caption {
+  position: relative;
+  z-index: 2;
+  margin-top: auto;
+  padding: 32px;
+}
+.headshot-caption .label {
+  font-family: 'Audiowide', system-ui, sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+.headshot-caption h3 {
+  font-family: 'Orbitron', system-ui, sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-on-dark);
+  margin-bottom: 8px;
+}
+.headshot-caption p {
+  font-size: 14px;
+  color: var(--text-body-dark);
+}
+.spine-line {
+  position: absolute;
+  width: 1px;
+  top: 12px;
+  bottom: 12px;
+  background: linear-gradient(to bottom, transparent, rgba(193, 212, 47, 0.35), transparent);
+}
+.spine-line.s1 { left: 12px; }
+.spine-line.s2 { left: 13px; opacity: 0.5; }
 
 /* ============================================================
    SECTIONS
@@ -340,6 +576,20 @@ h3 {
 /* Final CTA */
 .final-cta { background: var(--bg-dark); padding: 120px 64px; text-align: center; position: relative; overflow: hidden; }
 .final-cta-inner { position: relative; z-index: 2; max-width: 700px; margin: 0 auto; }
+/* Diffuse cyan glow blob in the bottom-left of the final CTA, mirrors the hero blob */
+.final-glow-blob {
+  position: absolute;
+  z-index: 0;
+  filter: blur(120px);
+  border-radius: 9999px;
+  opacity: 0.32;
+  background: rgb(92, 206, 255);
+  pointer-events: none;
+  width: 1000px;
+  height: 1000px;
+  bottom: -400px;
+  left: -500px;
+}
 .final-cta h2 { font-size: 40px; font-weight: 700; margin-bottom: 16px; }
 .final-cta .section-sub { color: var(--text-muted-dark); letter-spacing: 0.02em; margin-bottom: 40px; }
 .final-form { display: flex; justify-content: center; gap: 8px; margin-bottom: 16px; }
@@ -383,7 +633,10 @@ h3 {
   .hero-form { flex-direction: column; }
   .hero-input { width: 100%; }
   .btn-primary { width: 100%; justify-content: center; }
-  .hero-headshot { width: 280px; margin: 0 auto; }
+  .hero-headshot-col { justify-content: center; }
+  .headshot-card { width: 280px; }
+  .hero-glow-blob { width: 600px; height: 600px; top: -200px; right: -200px; }
+  .final-glow-blob { width: 600px; height: 600px; bottom: -200px; left: -200px; }
   .section { padding: 80px 20px; }
   h2 { font-size: 28px; }
   .card-grid { grid-template-columns: 1fr; gap: 16px; }
@@ -414,6 +667,7 @@ h3 {
 
 <!-- HERO -->
 <section class="hero" id="heroSection">
+  <div class="hero-glow-blob" aria-hidden="true"></div>
   <div class="hero-inner">
     <div class="hero-content">
       <div class="credential-pill">Former Gartner Analyst &middot; Head of AWS Startups Support</div>
@@ -429,8 +683,42 @@ h3 {
       </div>
       <p class="hero-micro">Free. Weekly. 5-minute read. Unsubscribe anytime.</p>
     </div>
-    <div class="hero-headshot" role="img" aria-label="Jason C. Lewis">
-      <img src="/images/jason_tie.png" alt="Jason C. Lewis professional headshot" onerror="this.parentElement.style.background='linear-gradient(135deg,#1a1a1c 0%,#222225 100%)'" />
+    <div class="hero-headshot-col">
+      <div class="headshot-frame">
+        <svg class="frame-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+          <g stroke-linecap="butt">
+            <path d="M0 0 L22 0"/>
+            <path d="M78 0 L100 0"/>
+            <path d="M0 100 L22 100"/>
+            <path d="M78 100 L100 100"/>
+            <path d="M0 0 L0 22"/>
+            <path d="M100 0 L100 22"/>
+            <path d="M0 78 L0 100"/>
+            <path d="M100 78 L100 100"/>
+            <path d="M47 0 L53 0"/>
+            <path d="M47 100 L53 100"/>
+            <path d="M0 47 L0 53"/>
+            <path d="M100 47 L100 53"/>
+          </g>
+        </svg>
+        <div class="light-rail tl"></div>
+        <div class="light-rail tr"></div>
+        <div class="light-rail br"></div>
+        <div class="light-rail bl"></div>
+        <div class="headshot-card">
+          <div class="spine-line s1"></div>
+          <div class="spine-line s2"></div>
+          <div class="headshot-photo">
+            <img src="/images/jason_tie.png" alt="Jason C. Lewis professional headshot" />
+          </div>
+          <div class="headshot-fade"></div>
+          <div class="headshot-caption">
+            <div class="label">From the operator's seat</div>
+            <h3>Jason C. Lewis</h3>
+            <p>AWS Startups &middot; ex-Gartner &middot; Founder &middot; Builder</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -576,6 +864,7 @@ h3 {
 
 <!-- FINAL CTA -->
 <section class="final-cta">
+  <div class="final-glow-blob" aria-hidden="true"></div>
   <div class="final-cta-inner">
     <h2 class="on-dark">If you want a grounded perspective on AI from someone still <span class="accent">in the work</span> — I'd be glad to have you along.</h2>
     <p class="section-sub" style="color:var(--text-muted-dark);margin:16px 0 40px;">Free. Weekly. AI from the trenches.</p>
