@@ -10,4 +10,8 @@ export default defineConfig({
   site: process.env.SITE_URL || undefined,
   build: { inlineStylesheets: 'auto' },
   vite: { build: { cssMinify: true } },
+  redirects: {
+    '/articles': '/insights',
+    '/articles/[slug]': '/insights/[slug]',
+  },
 });

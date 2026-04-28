@@ -15,7 +15,7 @@ export const GET: APIRoute = async () => {
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>${siteUrl}/articles</loc>
+    <loc>${siteUrl}/insights</loc>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
@@ -33,7 +33,7 @@ export const GET: APIRoute = async () => {
     .map(
       (article) => `
   <url>
-    <loc>${siteUrl}/articles/${article.slug}</loc>
+    <loc>${siteUrl}/insights/${article.slug}</loc>
     <lastmod>${article.published_at ? new Date(article.published_at).toISOString() : new Date().toISOString()}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
