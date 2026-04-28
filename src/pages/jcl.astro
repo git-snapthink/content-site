@@ -136,6 +136,20 @@ a { color: inherit; text-decoration: none; }
   transition: background 0.15s ease, transform 0.15s ease;
 }
 .nav-cta:hover { background: var(--accent-hover); transform: scale(1.02); }
+.nav-actions { display: flex; align-items: center; gap: 12px; }
+.nav-link {
+  font-family: 'Chakra Petch', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--text-primary);
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: transparent;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+.nav-link:hover { border-color: var(--accent); color: var(--accent); }
 
 /* ============================================================
    HERO
@@ -692,7 +706,10 @@ h3 {
 <!-- NAV -->
 <nav class="nav" id="mainNav">
   <a href="#" class="nav-brand"><span class="nav-brand-bar"></span>jasonclewis</a>
-  <button class="nav-cta" onclick="document.getElementById('heroEmailInput').focus(); document.getElementById('heroSection').scrollIntoView({behavior:'smooth'})">Subscribe</button>
+  <div class="nav-actions">
+    <a href="/articles" class="nav-link">Articles</a>
+    <button class="nav-cta" onclick="document.getElementById('heroEmailInput').focus(); document.getElementById('heroSection').scrollIntoView({behavior:'smooth'})">Subscribe</button>
+  </div>
 </nav>
 
 <!-- HERO -->
