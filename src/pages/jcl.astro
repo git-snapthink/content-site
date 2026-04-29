@@ -198,6 +198,60 @@ a { color: inherit; text-decoration: none; }
   text-decoration: none;
 }
 
+/* ── Spec-bar nav (accepted from live mode 4a0766ff, dark variant, defaults baked) ── */
+.spec-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 110;
+  width: 100%;
+  display: flex; align-items: center; gap: 0;
+  padding: 12px 28px;
+  background: var(--bg-dark);
+  border-bottom: 1px solid rgba(193, 212, 47, 0.325);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+  font-family: 'Audiowide', system-ui, sans-serif;
+}
+.spec-nav-brand {
+  color: var(--accent);
+  font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase;
+  padding-right: 28px; margin-right: 28px;
+  border-right: 1px solid rgba(245, 245, 240, 0.15);
+}
+.spec-nav-links { display: flex; gap: 8px; flex: 1; }
+.spec-nav-links a {
+  color: var(--text-muted-dark);
+  font-family: 'Audiowide', system-ui, sans-serif;
+  font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+  padding: 6px 12px;
+  display: inline-flex; align-items: center; gap: 8px;
+  transition: color 0.3s var(--ease-out-expo);
+}
+.spec-nav-links a::before {
+  content: ''; display: inline-block;
+  width: 7px; height: 1px;
+  background: var(--accent);
+  transition: width 0.3s var(--ease-out-expo);
+}
+.spec-nav-links a:hover { color: var(--accent); }
+.spec-nav-time {
+  color: var(--text-faint-dark);
+  font-size: 10px; letter-spacing: 0.2em;
+  margin-right: 16px;
+}
+.spec-nav-cta {
+  background: var(--accent); color: var(--cta-text);
+  border: none; border-radius: 2px;
+  padding: 8px 18px;
+  font-family: 'Audiowide', system-ui, sans-serif;
+  font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
+  cursor: pointer;
+}
+.spec-nav-cta:hover { background: var(--accent-hover); }
+@media (max-width: 767px) {
+  .spec-nav { padding: 10px 16px; gap: 12px; }
+  .spec-nav-brand { padding-right: 0; margin-right: 0; border-right: none; }
+  .spec-nav-links, .spec-nav-time { display: none; }
+  .spec-nav-cta { margin-left: auto; padding: 8px 14px; }
+}
+
 /* ── Hamburger ── */
 .nav-hamburger {
   display: none;
@@ -344,11 +398,11 @@ a { color: inherit; text-decoration: none; }
   margin-bottom: 32px;
 }
 .hero h1 {
-  font-family: 'Orbitron', system-ui, sans-serif;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
   font-size: 56px;
   font-weight: 700;
   line-height: 1.05;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.025em;
   color: var(--text-on-dark);
   margin-bottom: 24px;
 }
@@ -850,14 +904,15 @@ h3 {
 
 <!-- NAV -->
 <div class="nav-wrapper" id="navWrapper">
-  <nav class="nav">
-    <a href="/" class="nav-brand"><span class="nav-brand-bar"></span>jasonclewis</a>
-    <div class="nav-links">
+  <nav class="spec-nav">
+    <a href="/" class="spec-nav-brand">jasonclewis</a>
+    <div class="spec-nav-links">
       <a href="#why-this-exists">Why this exists</a>
-      <a href="#what-you-get">What You Get</a>
+      <a href="#what-you-get">What you get</a>
       <a href="/insights">Insights</a>
     </div>
-    <button class="nav-cta desktop-only" onclick="document.getElementById('heroEmailInput').focus(); document.getElementById('heroSection').scrollIntoView({behavior:'smooth'})">Subscribe</button>
+    <span class="spec-nav-time">Operator&apos;s Log / Weekly</span>
+    <button class="spec-nav-cta" onclick="document.getElementById('heroEmailInput').focus(); document.getElementById('heroSection').scrollIntoView({behavior:'smooth'})">Subscribe</button>
     <button class="nav-hamburger" id="hamburger" aria-label="Menu">
       <span></span>
       <span></span>
@@ -875,64 +930,64 @@ h3 {
 </div>
 
 <!-- HERO -->
-<section class="hero" id="heroSection">
-  <div class="hero-glow-blob" aria-hidden="true"></div>
-  <div class="hero-glow-blob-bl" aria-hidden="true"></div>
-  <div class="hero-inner">
-    <div class="hero-content">
-      <div class="credential-pill">Former Gartner Analyst &middot; Head of AWS Startups Support</div>
-      <h1>Over a decade in AI. Here's what I've learned from <span class="accent">the trenches.</span></h1>
-      <p class="hero-sub">Every week I share what I'm actually seeing — what's working, what's overhyped, and where I'd focus if I were making your decisions. Grounded in real operator experience at AWS and Gartner. Practical by design.</p>
-      <form class="hero-form" id="heroForm">
-        <input type="email" class="hero-input" id="heroEmailInput" name="email" placeholder="Your best email" aria-label="Email address" aria-describedby="heroFormStatus" autocomplete="email" inputmode="email" required />
-        <button class="btn-primary" type="submit" id="heroSubmitBtn">Subscribe to Operator's Log</button>
-      </form>
-      <div class="form-status" id="heroFormStatus" role="status" aria-live="polite"></div>
-      <div class="hero-form-success" id="heroSuccess">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-        You're on the list. First issue coming soon.
-      </div>
-      <p class="hero-micro">Free. Weekly. 5-minute read. No spam, no obligation. Unsubscribe anytime.</p>
-    </div>
-    <div class="hero-headshot-col">
-      <div class="headshot-frame">
-        <svg class="frame-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-          <g stroke-linecap="butt">
-            <path d="M0 0 L22 0"/>
-            <path d="M78 0 L100 0"/>
-            <path d="M0 100 L22 100"/>
-            <path d="M78 100 L100 100"/>
-            <path d="M0 0 L0 22"/>
-            <path d="M100 0 L100 22"/>
-            <path d="M0 78 L0 100"/>
-            <path d="M100 78 L100 100"/>
-            <path d="M47 0 L53 0"/>
-            <path d="M47 100 L53 100"/>
-            <path d="M0 47 L0 53"/>
-            <path d="M100 47 L100 53"/>
-          </g>
-        </svg>
-        <div class="light-rail tl"></div>
-        <div class="light-rail tr"></div>
-        <div class="light-rail br"></div>
-        <div class="light-rail bl"></div>
-        <div class="headshot-card">
-          <div class="spine-line s1"></div>
-          <div class="spine-line s2"></div>
-          <div class="headshot-photo">
-            <img src="/images/jason_tie.png" alt="Jason C. Lewis professional headshot" />
+        <section class="hero" id="heroSection">
+          <div class="hero-glow-blob" aria-hidden="true"></div>
+          <div class="hero-glow-blob-bl" aria-hidden="true"></div>
+          <div class="hero-inner">
+            <div class="hero-content">
+              <div class="credential-pill">Former Gartner Analyst &middot; Head of AWS Startups Support</div>
+              <h1>Over a decade in AI. Here's what I've learned from <span class="accent">the trenches.</span></h1>
+              <p class="hero-sub">Every week I share what I'm actually seeing — what's working, what's overhyped, and where I'd focus if I were making your decisions. Grounded in real operator experience at AWS and Gartner. Practical by design.</p>
+              <form class="hero-form" id="heroForm">
+                <input type="email" class="hero-input" id="heroEmailInput" name="email" placeholder="Your best email" aria-label="Email address" aria-describedby="heroFormStatus" autocomplete="email" inputmode="email" required />
+                <button class="btn-primary" type="submit" id="heroSubmitBtn">Subscribe to Operator's Log</button>
+              </form>
+              <div class="form-status" id="heroFormStatus" role="status" aria-live="polite"></div>
+              <div class="hero-form-success" id="heroSuccess">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                You're on the list. First issue coming soon.
+              </div>
+              <p class="hero-micro">Free. Weekly. 5-minute read. No spam, no obligation. Unsubscribe anytime.</p>
+            </div>
+            <div class="hero-headshot-col">
+              <div class="headshot-frame">
+                <svg class="frame-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                  <g stroke-linecap="butt">
+                    <path d="M0 0 L22 0"/>
+                    <path d="M78 0 L100 0"/>
+                    <path d="M0 100 L22 100"/>
+                    <path d="M78 100 L100 100"/>
+                    <path d="M0 0 L0 22"/>
+                    <path d="M100 0 L100 22"/>
+                    <path d="M0 78 L0 100"/>
+                    <path d="M100 78 L100 100"/>
+                    <path d="M47 0 L53 0"/>
+                    <path d="M47 100 L53 100"/>
+                    <path d="M0 47 L0 53"/>
+                    <path d="M100 47 L100 53"/>
+                  </g>
+                </svg>
+                <div class="light-rail tl"></div>
+                <div class="light-rail tr"></div>
+                <div class="light-rail br"></div>
+                <div class="light-rail bl"></div>
+                <div class="headshot-card">
+                  <div class="spine-line s1"></div>
+                  <div class="spine-line s2"></div>
+                  <div class="headshot-photo">
+                    <img src="/images/jason_tie.png" alt="Jason C. Lewis professional headshot" />
+                  </div>
+                  <div class="headshot-fade"></div>
+                  <div class="headshot-caption">
+                    <div class="label">From the operator's seat</div>
+                    <h3>Jason C. Lewis</h3>
+                    <p>AWS Startups &middot; ex-Gartner &middot; Founder &middot; Builder</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="headshot-fade"></div>
-          <div class="headshot-caption">
-            <div class="label">From the operator's seat</div>
-            <h3>Jason C. Lewis</h3>
-            <p>AWS Startups &middot; ex-Gartner &middot; Founder &middot; Builder</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+        </section>
 
 <!-- WHY THIS EXISTS -->
 <section class="section section-white" id="why-this-exists">
@@ -1061,11 +1116,11 @@ h3 {
         <summary><span>Another AI newsletter. Why this one?</span><svg class="faq-chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></summary>
         <div class="faq-answer">Most AI newsletters are written by people covering AI from the outside. This one is written by someone who leads AI startup support at AWS, spent years directing AI strategy and running a team of Analysts advising 14,000+ organizations at Gartner. I still ship AI products as a full-stack developer. I'm not a journalist or a pundit — I'm an operator, and that shapes everything I write.</div>
       </details>
-      <details class="faq-item">
+      <details class="faq-item" open>
         <summary><span>How often will I hear from you?</span><svg class="faq-chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></summary>
         <div class="faq-answer">I publish once a week.</div>
       </details>
-      <details class="faq-item">
+      <details class="faq-item" open>
         <summary><span>Who do you write for?</span><svg class="faq-chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></summary>
         <div class="faq-answer">
           <p class="faq-lede">Four readers, one common thread: people making real decisions about AI.</p>
@@ -1220,5 +1275,8 @@ h3 {
   });
 </script>
 
+<!-- impeccable-live-start -->
+<script src="http://localhost:8400/live.js"></script>
+<!-- impeccable-live-end -->
 </body>
 </html>
