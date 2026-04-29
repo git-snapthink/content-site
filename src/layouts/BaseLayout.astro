@@ -9,6 +9,7 @@ interface Props {
 
 const { title, description } = Astro.props;
 const theme = getBrandTheme();
+const isJcl = import.meta.env.PUBLIC_BRAND === 'jason-c-lewis';
 const gaId = import.meta.env.PUBLIC_GA_MEASUREMENT_ID;
 const googleFontUrl = theme.googleFont
   ? `https://fonts.googleapis.com/css2?family=${theme.googleFont.replace(/ /g, '+')}:wght@400;600;700&display=swap`
@@ -159,6 +160,60 @@ const googleFontUrl = theme.googleFont
         text-decoration: none;
       }
 
+      /* ── Navigation — Spec-page status bar (jcl brand only) ── */
+      .nav-wrapper.spec-mode { position: static; display: contents; }
+      .spec-nav {
+        position: fixed; top: 0; left: 0; right: 0; z-index: 40;
+        width: 100%;
+        display: flex; align-items: center; gap: 0;
+        padding: 12px 28px;
+        background: #111113;
+        border-bottom: 1px solid rgba(193, 212, 47, 0.32);
+        box-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+        font-family: 'Audiowide', system-ui, sans-serif;
+      }
+      .spec-nav-brand {
+        color: var(--accent);
+        font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase;
+        padding-right: 28px; margin-right: 28px;
+        border-right: 1px solid rgba(245, 245, 240, 0.15);
+        text-decoration: none;
+      }
+      .spec-nav-brand:hover { text-decoration: none; }
+      .spec-nav-links { display: flex; align-items: center; gap: 8px; flex: 1; list-style: none; }
+      .spec-nav-links a {
+        color: rgba(245, 245, 240, 0.55);
+        font-family: 'Audiowide', system-ui, sans-serif;
+        font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+        padding: 6px 12px;
+        display: inline-flex; align-items: center; gap: 8px;
+        text-decoration: none;
+        transition: color 0.3s var(--ease-out-expo);
+      }
+      .spec-nav-links a::before {
+        content: ''; display: inline-block;
+        width: 7px; height: 1px;
+        background: var(--accent);
+      }
+      .spec-nav-links a:hover { color: var(--accent); text-decoration: none; }
+      .spec-nav-time {
+        color: rgba(245, 245, 240, 0.32);
+        font-family: 'Audiowide', system-ui, sans-serif;
+        font-size: 10px; letter-spacing: 0.2em;
+        margin-right: 16px;
+      }
+      .spec-nav-cta {
+        background: var(--accent); color: var(--accentText);
+        border: none; border-radius: 2px;
+        padding: 8px 18px;
+        font-family: 'Audiowide', system-ui, sans-serif;
+        font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
+        cursor: pointer;
+        text-decoration: none;
+      }
+      .spec-nav-cta:hover { opacity: 0.88; text-decoration: none; }
+      .spec-mode .nav-hamburger span { background: rgba(245, 245, 240, 0.85); }
+
       /* ── Hamburger ── */
       .nav-hamburger {
         display: none;
@@ -281,25 +336,45 @@ const googleFontUrl = theme.googleFont
     </style>
   </head>
   <body>
-    <!-- Navigation — Floating Glass Pill -->
-    <div class="nav-wrapper" id="navWrapper">
-      <nav class="nav">
-        <a href="/" class="nav-logo">
-          {theme.logoHtml ? <Fragment set:html={theme.logoHtml} /> : <span class="nav-logo-text">{theme.name}</span>}
-        </a>
-        <div class="nav-links">
-          <a href="/#why-this-exists">Why this exists</a>
-          <a href="/#what-you-get">What You Get</a>
-          <a href="/insights">Insights</a>
-        </div>
-        <a href="https://jasonclewis.substack.com" target="_blank" rel="noopener" class="nav-cta desktop-only">Subscribe</a>
-        <button class="nav-hamburger" id="hamburger" aria-label="Menu">
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
-      </nav>
-    </div>
+    <!-- Navigation -->
+    {isJcl ? (
+      <div class="nav-wrapper spec-mode" id="navWrapper">
+        <nav class="spec-nav">
+          <a href="/" class="spec-nav-brand">jasonclewis</a>
+          <div class="spec-nav-links">
+            <a href="/#why-this-exists">Why this exists</a>
+            <a href="/#what-you-get">What you get</a>
+            <a href="/insights">Insights</a>
+          </div>
+          <span class="spec-nav-time">Operator&apos;s Log / Weekly</span>
+          <a href="https://jasonclewis.substack.com" target="_blank" rel="noopener" class="spec-nav-cta">Subscribe</a>
+          <button class="nav-hamburger" id="hamburger" aria-label="Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+        </nav>
+      </div>
+    ) : (
+      <div class="nav-wrapper" id="navWrapper">
+        <nav class="nav">
+          <a href="/" class="nav-logo">
+            {theme.logoHtml ? <Fragment set:html={theme.logoHtml} /> : <span class="nav-logo-text">{theme.name}</span>}
+          </a>
+          <div class="nav-links">
+            <a href="/#why-this-exists">Why this exists</a>
+            <a href="/#what-you-get">What You Get</a>
+            <a href="/insights">Insights</a>
+          </div>
+          <a href="https://jasonclewis.substack.com" target="_blank" rel="noopener" class="nav-cta desktop-only">Subscribe</a>
+          <button class="nav-hamburger" id="hamburger" aria-label="Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+        </nav>
+      </div>
+    )}
 
     <!-- Mobile menu -->
     <div class="mobile-menu" id="mobileMenu">
