@@ -27,3 +27,4 @@ pnpm-debug.log*
 # claude code tooling
 .claude/
 public/preview/
+.impeccable-live.json
