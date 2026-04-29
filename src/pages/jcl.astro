@@ -37,6 +37,7 @@ const gaId = import.meta.env.PUBLIC_GA_MEASUREMENT_ID;
   --accent-pressed: #a8b828;
   --accent-tint: rgba(193, 212, 47, 0.09);
   --accent-glow: rgba(193, 212, 47, 0.19);
+  --error: #ff8a8a;
   --cta-text: #111113;
   --border: #e2e2de;
   --border-hover: #c1d42f;
@@ -183,7 +184,7 @@ a { color: inherit; text-decoration: none; }
   color: var(--cta-text);
   font-size: 14px;
   font-weight: 600;
-  font-family: system-ui, sans-serif;
+  font-family: 'Chakra Petch', system-ui, sans-serif;
   border: none;
   cursor: pointer;
   transition: all 0.5s var(--ease-spring);
@@ -406,6 +407,11 @@ a { color: inherit; text-decoration: none; }
   margin-bottom: 16px;
 }
 .hero-form-success.show { display: flex; }
+/* Inline form status messaging — replaces alert() and dishonest success-on-fallback flows. */
+.form-status { font-size: 14px; line-height: 1.5; margin: -4px 0 16px; }
+.form-status:empty { display: none; }
+.form-status[data-kind="error"] { color: var(--error); }
+.form-status[data-kind="pending"] { color: var(--accent); }
 /* ── Tactical bracket frame around the headshot (ported from glow4) ── */
 .headshot-frame {
   position: relative;
@@ -569,7 +575,7 @@ a { color: inherit; text-decoration: none; }
   display: flex;
   flex-direction: column;
   border-radius: 16px;
-  background: linear-gradient(160deg, #1a1a1c 0%, #0e0e10 100%);
+  background: linear-gradient(160deg, var(--bg-dark-card) 0%, #0e0e10 100%);
   overflow: hidden;
   isolation: isolate;
 }
@@ -662,43 +668,31 @@ h2 .accent { color: var(--accent); }
 .problem-body p { margin-bottom: 24px; color: var(--text-body); }
 .problem-body p:last-child { color: var(--text-primary); font-weight: 500; margin-bottom: 0; }
 
-/* Cards */
-.card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: var(--max-cards); margin: 0 auto; }
-.card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 32px;
-  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-}
-.card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 20px rgba(0,0,0,0.04); }
-.card-icon {
-  width: 44px; height: 44px;
-  background: var(--accent-tint);
-  border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  margin-bottom: 20px;
-}
-.card-icon svg { width: 24px; height: 24px; stroke: var(--accent); stroke-width: 1.5; fill: none; }
+/* Promises */
+.promise-list { max-width: 720px; margin: 0 auto; list-style: none; padding: 0; display: grid; gap: 56px; text-align: left; }
+.promise-item { display: grid; grid-template-columns: 56px 1fr; gap: 0 28px; align-items: baseline; }
+.promise-num { font-family: 'Audiowide', system-ui, sans-serif; font-size: 11px; letter-spacing: 0.18em; color: var(--accent); padding-top: 4px; }
+.promise-text h3 { margin-bottom: 12px; font-size: 22px; }
+.promise-text p { font-size: 16px; line-height: 1.65; color: var(--text-body); margin: 0; max-width: 56ch; }
 h3 {
   font-family: 'Orbitron', system-ui, sans-serif;
   font-size: 20px; font-weight: 600; line-height: 1.3;
   letter-spacing: -0.01em; color: var(--text-primary);
   margin-bottom: 12px;
 }
-.card p { font-size: 15px; line-height: 1.65; color: var(--text-body); }
 
 /* Career */
-.career-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
-.career-block { border-left: 3px solid var(--accent); padding-left: 24px; }
-.career-label { font-family: 'Audiowide', system-ui, sans-serif; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
-.career-title { font-family: 'Orbitron', system-ui, sans-serif; font-size: 18px; font-weight: 600; line-height: 1.3; color: var(--text-primary); margin-bottom: 12px; }
-.career-body { font-size: 15px; line-height: 1.6; color: var(--text-body); margin-bottom: 16px; }
-.career-metric { display: inline-block; font-family: 'Orbitron', system-ui, sans-serif; font-size: 16px; font-weight: 600; color: var(--text-primary); background: var(--accent-tint); padding: 6px 14px; border-radius: 6px; }
-.section-divider { width: 80px; height: 2px; background: var(--accent); margin: 64px auto; border-radius: 1px; }
+.career-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 56px 48px; counter-reset: career; text-align: left; }
+.career-block { counter-increment: career; display: flex; flex-direction: column; padding-top: 22px; position: relative; }
+.career-block::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: var(--accent); }
+.career-label { font-family: 'Audiowide', system-ui, sans-serif; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+.career-label::before { content: counter(career, decimal-leading-zero) ' \2002 '; color: var(--text-faint); letter-spacing: 0.18em; }
+.career-title { font-family: 'Orbitron', system-ui, sans-serif; font-size: 18px; font-weight: 600; line-height: 1.3; color: var(--text-primary); margin-bottom: 14px; }
+.career-body { font-size: 15px; line-height: 1.65; color: var(--text-body); margin-bottom: 20px; flex-grow: 1; }
+.career-metric { align-self: flex-start; font-family: 'Orbitron', system-ui, sans-serif; font-size: 14px; font-weight: 600; line-height: 1.4; color: var(--text-primary); background: var(--accent-tint); padding: 8px 14px; border-radius: 6px; }
 
 /* Samples */
-.sample-header { font-family: 'Orbitron', system-ui, sans-serif; font-size: 24px; font-weight: 600; color: var(--text-primary); text-align: center; margin-bottom: 40px; }
+.sample-header { font-family: 'Orbitron', system-ui, sans-serif; font-size: 24px; font-weight: 600; color: var(--text-primary); text-align: center; margin: 96px 0 40px; }
 .sample-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px; }
 .sample-card { background: #f8f8f5; border: 1px solid var(--border); border-radius: 12px; padding: 32px; }
 .sample-label { font-family: 'Audiowide', system-ui, sans-serif; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 16px; }
@@ -728,7 +722,14 @@ h3 {
 .faq-item summary::-webkit-details-marker { display: none; }
 .faq-chevron { width: 16px; height: 16px; stroke: var(--text-muted); stroke-width: 2; fill: none; flex-shrink: 0; margin-left: 16px; transition: transform 0.2s ease; }
 .faq-item[open] .faq-chevron { transform: rotate(90deg); }
-.faq-answer { padding: 0 0 24px; font-size: 16px; line-height: 1.7; color: var(--text-body); }
+.faq-answer { padding: 0 0 24px; font-size: 16px; line-height: 1.7; color: var(--text-body); text-align: left; }
+.faq-answer p + p { margin-top: 16px; }
+.faq-lede { color: var(--text-primary); font-weight: 500; margin-bottom: 20px; }
+.faq-readers { list-style: none; padding: 0; margin: 0 0 22px; display: grid; gap: 14px; }
+.faq-readers li { position: relative; padding-left: 24px; }
+.faq-readers li::before { content: ''; position: absolute; left: 0; top: 0.7em; width: 14px; height: 1px; background: var(--accent); }
+.faq-readers strong { color: var(--text-primary); font-weight: 600; }
+.faq-tail { color: var(--text-muted); font-size: 15px; }
 
 /* Final CTA */
 .final-cta { background: var(--bg-dark); padding: 120px 64px; text-align: center; position: relative; overflow: hidden; }
@@ -762,7 +763,7 @@ h3 {
   right: -500px;
 }
 .final-cta h2 { font-size: 40px; font-weight: 700; margin-bottom: 16px; }
-.final-cta .section-sub { color: var(--text-muted-dark); letter-spacing: 0.02em; margin-bottom: 40px; }
+.final-cta .section-sub { color: var(--text-muted-dark); letter-spacing: 0.02em; margin: 16px auto 40px; max-width: 540px; }
 .final-form { display: flex; justify-content: center; gap: 8px; margin-bottom: 16px; }
 .final-input { width: 360px; padding: 14px 18px; background: var(--bg-dark-card); border: 1px solid var(--border-dark); border-radius: 8px; font-family: 'Chakra Petch', system-ui, sans-serif; font-size: 16px; color: var(--text-on-dark); outline: none; transition: border-color 0.15s ease; }
 .final-input::placeholder { color: var(--text-faint-dark); }
@@ -786,7 +787,7 @@ h3 {
 
 /* Footer */
 .footer { background: var(--bg-dark); padding: 40px 64px; border-top: 1px solid var(--bg-dark-subtle); display: flex; justify-content: space-between; align-items: center; }
-.footer-brand { display: flex; align-items: center; gap: 10px; font-family: 'Audiowide', system-ui, sans-serif; font-size: 14px; letter-spacing: 0.11em; color: #71716b; }
+.footer-brand { display: flex; align-items: center; gap: 10px; font-family: 'Audiowide', system-ui, sans-serif; font-size: 14px; letter-spacing: 0.11em; color: var(--text-muted); }
 .footer-right { display: flex; align-items: center; gap: 16px; }
 .footer-social svg { width: 20px; height: 20px; stroke: var(--text-faint-dark); fill: none; stroke-width: 1.5; transition: stroke 0.15s ease; }
 .footer-social:hover svg { stroke: var(--accent); }
@@ -796,22 +797,35 @@ h3 {
    RESPONSIVE
    ============================================================ */
 @media (max-width: 767px) {
-  .hero { padding: 100px 20px 80px; }
-  .hero-inner { grid-template-columns: 1fr; gap: 40px; }
-  .hero h1 { font-size: 36px; }
-  .hero-sub { font-size: 17px; }
-  .hero-form { flex-direction: column; }
+  .hero { padding: 60px 20px 80px; }
+  .hero-inner { grid-template-columns: 1fr; gap: 28px; align-items: stretch; }
+  /* Lift hero-content's children up into the grid so we can reorder them on mobile.
+     Order: credential pill, headshot, h1, sub, form, micro — face arrives second, not last. */
+  .hero-content { display: contents; }
+  .credential-pill { order: 1; margin-bottom: 0; max-width: none; }
+  .hero-headshot-col { order: 2; justify-content: center; }
+  .hero h1 { order: 3; font-size: 36px; margin-bottom: 0; }
+  .hero-sub { order: 4; font-size: 17px; margin-bottom: 0; max-width: none; }
+  .hero-form { order: 5; flex-direction: column; margin-bottom: 0; gap: 12px; }
+  #heroFormStatus { order: 5; }
+  .hero-form-success { order: 5; margin-bottom: 0; }
+  .hero-micro { order: 6; }
   .hero-input { width: 100%; }
   .btn-primary { width: 100%; justify-content: center; }
-  .hero-headshot-col { justify-content: center; }
-  .headshot-card { width: 280px; }
+  .headshot-card { width: 220px; }
+  .headshot-frame { --rail-extend-out: 30px; --frame-gap: 12px; }
+  .headshot-caption { padding: 20px; }
+  .headshot-caption h3 { font-size: 19px; }
+  .headshot-caption p { font-size: 12px; line-height: 1.4; }
   .hero-glow-blob { width: 450px; height: 450px; top: -150px; right: -150px; }
   .hero-glow-blob-bl { width: 382px; height: 382px; bottom: -135px; left: -153px; }
   .final-glow-blob { width: 600px; height: 600px; bottom: -200px; left: -200px; }
   .final-glow-blob-tr { width: 600px; height: 600px; top: -200px; right: -200px; }
   .section { padding: 80px 20px; }
   h2 { font-size: 28px; }
-  .card-grid { grid-template-columns: 1fr; gap: 16px; }
+  .promise-list { gap: 40px; }
+  .promise-item { grid-template-columns: 40px 1fr; gap: 0 16px; }
+  .promise-text h3 { font-size: 19px; }
   .career-grid { grid-template-columns: 1fr; }
   .sample-grid { grid-template-columns: 1fr; }
   .diff-grid { grid-template-columns: 1fr; gap: 24px; }
@@ -869,15 +883,16 @@ h3 {
       <div class="credential-pill">Former Gartner Analyst &middot; Head of AWS Startups Support</div>
       <h1>Over a decade in AI. Here's what I've learned from <span class="accent">the trenches.</span></h1>
       <p class="hero-sub">Every week I share what I'm actually seeing — what's working, what's overhyped, and where I'd focus if I were making your decisions. Grounded in real operator experience at AWS and Gartner. Practical by design.</p>
-      <div class="hero-form" id="heroFormWrap">
-        <input type="email" class="hero-input" id="heroEmailInput" placeholder="Your best email" aria-label="Email address" />
-        <button class="btn-primary" id="heroSubmitBtn" onclick="handleSubscribe('heroEmailInput','heroFormWrap','heroSuccess','heroSubmitBtn')">Subscribe to Operator's Log</button>
-      </div>
+      <form class="hero-form" id="heroForm">
+        <input type="email" class="hero-input" id="heroEmailInput" name="email" placeholder="Your best email" aria-label="Email address" aria-describedby="heroFormStatus" autocomplete="email" inputmode="email" required />
+        <button class="btn-primary" type="submit" id="heroSubmitBtn">Subscribe to Operator's Log</button>
+      </form>
+      <div class="form-status" id="heroFormStatus" role="status" aria-live="polite"></div>
       <div class="hero-form-success" id="heroSuccess">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
         You're on the list. First issue coming soon.
       </div>
-      <p class="hero-micro">Free. Weekly. 5-minute read. Unsubscribe anytime.</p>
+      <p class="hero-micro">Free. Weekly. 5-minute read. No spam, no obligation. Unsubscribe anytime.</p>
     </div>
     <div class="hero-headshot-col">
       <div class="headshot-frame">
@@ -937,25 +952,30 @@ h3 {
 <section class="section section-alt" id="what-you-get">
   <div class="section-inner text-center">
     <div class="section-pill">What You Get</div>
-    <h2 class="mb-16">One email. Every week. Practical AI perspective from the operator's seat.</h2>
-    <p class="section-sub mb-56">Here's what you'll find in every edition of Operator's Log.</p>
-    <div class="card-grid">
-      <div class="card">
-        <div class="card-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/></svg></div>
-        <h3>What's Actually Working</h3>
-        <p>I lead support for the fastest-scaling AI startups in North America. I see which AI approaches ship to production and which die in pilot. You get that intel weekly, without the vendor spin.</p>
-      </div>
-      <div class="card">
-        <div class="card-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></div>
-        <h3>What to Bet On Next</h3>
-        <p>Every week surfaces a new "must-have" AI capability. Most are noise. I tell you which ones are worth your time, your budget, and your team's attention. Grounded in patterns across 14,000+ organizations.</p>
-      </div>
-      <div class="card">
-        <div class="card-icon"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
-        <h3>How to Build With It</h3>
-        <p>Not theory. I'm a full-stack developer shipping AI-powered products right now. The newsletter covers what works in production, what breaks at scale, and what the demos conveniently leave out.</p>
-      </div>
-    </div>
+    <h2 class="mb-56">One email. Every week. Practical AI perspective from the operator's seat.</h2>
+    <ol class="promise-list">
+      <li class="promise-item">
+        <span class="promise-num">01</span>
+        <div class="promise-text">
+          <h3>What's actually working.</h3>
+          <p>Which AI approaches ship to production. Which die in the pilot. Weekly intel, without the vendor spin.</p>
+        </div>
+      </li>
+      <li class="promise-item">
+        <span class="promise-num">02</span>
+        <div class="promise-text">
+          <h3>What to bet on next.</h3>
+          <p>Every week surfaces a new &ldquo;must-have.&rdquo; Most are noise. The few worth your budget, your headcount, and your team's attention.</p>
+        </div>
+      </li>
+      <li class="promise-item">
+        <span class="promise-num">03</span>
+        <div class="promise-text">
+          <h3>How to build with it.</h3>
+          <p>What works in production. What breaks at scale. What the demo conveniently leaves out.</p>
+        </div>
+      </li>
+    </ol>
   </div>
 </section>
 
@@ -984,7 +1004,6 @@ h3 {
         <span class="career-metric">Entrepreneur, Founder,<br />Operator, Developer</span>
       </div>
     </div>
-    <div class="section-divider"></div>
     <div class="sample-header">Read before you subscribe.</div>
     <div class="sample-grid">
       <div class="sample-card">
@@ -1048,10 +1067,16 @@ h3 {
       </details>
       <details class="faq-item">
         <summary><span>Who do you write for?</span><svg class="faq-chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></summary>
-        <div class="faq-answer"><span><b>The AI Startup Founder</b> - A founder or co-founder (seed to Series C) building an AI-native company. 
-</span><span><b>The Corporate AI Leader</b> - A VP, SVP, or C-suite executive at a mid-to-large company (500-50,000+ employees) who is responsible for — or deeply involved in — their organization's AI strategy.
-</span><span><b>The Rising Tech Leader</b> - A career professional (senior individual contributor to director level) in technology,
-</span><span><b>The AI-Aware Professional</b> - A working professional (manager to VP level) who knows AI matters but is overwhelmed by the noise.</span></div>
+        <div class="faq-answer">
+          <p class="faq-lede">Four readers, one common thread: people making real decisions about AI.</p>
+          <ul class="faq-readers">
+            <li><strong>The AI Startup Founder</strong> &mdash; seed to Series C, building an AI-native company.</li>
+            <li><strong>The Corporate AI Leader</strong> &mdash; VP, SVP, or C-suite at a 500&ndash;50,000+ employee company, accountable for AI strategy.</li>
+            <li><strong>The Rising Tech Leader</strong> &mdash; senior IC to director in tech, positioning for an AI-fluent next move.</li>
+            <li><strong>The AI-Aware Professional</strong> &mdash; manager to VP who knows AI matters but is overwhelmed by the noise.</li>
+          </ul>
+          <p class="faq-tail">Budget, headcount, or career capital on the line. Not browsers, not learners.</p>
+        </div>
       </details>
     </div>
   </div>
@@ -1063,16 +1088,17 @@ h3 {
   <div class="final-glow-blob-tr" aria-hidden="true"></div>
   <div class="final-cta-inner">
     <h2 class="on-dark">If you want a grounded perspective on AI from someone still <span class="accent">in the work</span> — I'd be glad to have you along.</h2>
-    <p class="section-sub" style="color:var(--text-muted-dark);margin:16px 0 40px;">Free. Weekly. AI from the trenches.</p>
-    <div class="final-form" id="finalFormWrap">
-      <input type="email" class="final-input" id="finalEmailInput" placeholder="Your best email" aria-label="Email address" />
-      <button class="btn-primary" id="finalSubmitBtn" onclick="handleSubscribe('finalEmailInput','finalFormWrap','finalSuccess','finalSubmitBtn')">Subscribe to Operator's Log</button>
-    </div>
+    <p class="section-sub">Free. Weekly. AI from the trenches.</p>
+    <form class="final-form" id="finalForm">
+      <input type="email" class="final-input" id="finalEmailInput" name="email" placeholder="Your best email" aria-label="Email address" aria-describedby="finalFormStatus" autocomplete="email" inputmode="email" required />
+      <button class="btn-primary" type="submit" id="finalSubmitBtn">Subscribe to Operator's Log</button>
+    </form>
+    <div class="form-status" id="finalFormStatus" role="status" aria-live="polite"></div>
     <div class="final-form-success" id="finalSuccess">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
       You're on the list. First issue coming soon.
     </div>
-    <p class="final-micro">5-minute read. Unsubscribe anytime. No spam. No sales pitch. Ever.</p>
+    <p class="final-micro">Free. Weekly. 5-minute read. No spam, no obligation. Unsubscribe anytime.</p>
     <a href="https://www.linkedin.com/in/jasonclewis/" target="_blank" rel="noopener" class="link-secondary">Or follow on LinkedIn <span class="arrow">&rarr;</span></a>
   </div>
 </section>
@@ -1115,42 +1141,83 @@ h3 {
   })();
 
   // ── Substack subscribe (direct browser POST to bypass Cloudflare) ──
-  async function handleSubscribe(inputId, formWrapId, successId, btnId) {
+  function setupSubscribeForm({ formId, inputId, btnId, successId, statusId }) {
+    const form = document.getElementById(formId);
     const input = document.getElementById(inputId);
     const btn = document.getElementById(btnId);
-    const email = input?.value?.trim();
-    if (!email) { input?.focus(); return; }
+    const success = document.getElementById(successId);
+    const status = document.getElementById(statusId);
+    if (!form) return;
 
-    btn.disabled = true;
+    function setStatus(kind, message) {
+      status.textContent = message || '';
+      if (kind) status.dataset.kind = kind; else delete status.dataset.kind;
+    }
 
-    try {
-      const res = await fetch('https://jasonclewis.substack.com/api/v1/free', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: email,
-          first_url: window.location.href,
-          current_url: window.location.href,
-          current_referrer: document.referrer || '',
-          source: 'custom_embed',
-          public_brand: 'jason-c-lewis'
-        }),
-      });
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = input.value.trim();
+      // Defense in depth: HTML5 validation already blocks invalid submits, but
+      // catch the edge case where someone bypasses it via JS.
+      if (!email || !input.checkValidity()) {
+        setStatus('error', 'Please enter a valid email address.');
+        input.focus();
+        return;
+      }
 
-      if (res.ok) {
-        document.getElementById(formWrapId).style.display = 'none';
-        document.getElementById(successId).classList.add('show');
-      } else {
-        alert('Something went wrong. Please try again.');
+      setStatus(null, '');
+      btn.disabled = true;
+
+      try {
+        const res = await fetch('https://jasonclewis.substack.com/api/v1/free', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email,
+            first_url: window.location.href,
+            current_url: window.location.href,
+            current_referrer: document.referrer || '',
+            source: 'custom_embed',
+            public_brand: 'jason-c-lewis',
+          }),
+        });
+
+        if (res.ok) {
+          form.style.display = 'none';
+          setStatus(null, '');
+          success.classList.add('show');
+        } else {
+          setStatus('error', "Subscribe didn't go through. Try again, or open Substack directly.");
+          btn.disabled = false;
+        }
+      } catch {
+        // CORS or network error: open Substack subscribe in a new tab with the email prefilled.
+        // Don't claim success — they haven't subscribed until they confirm there.
+        window.open(
+          'https://jasonclewis.substack.com/subscribe?email=' + encodeURIComponent(email),
+          '_blank',
+          'noopener,noreferrer'
+        );
+        setStatus('pending', 'Finish subscribing in the new tab.');
         btn.disabled = false;
       }
-    } catch {
-      // CORS or network error — fall back to opening Substack directly
-      window.open('https://jasonclewis.substack.com/subscribe?email=' + encodeURIComponent(email), '_blank');
-      document.getElementById(formWrapId).style.display = 'none';
-      document.getElementById(successId).classList.add('show');
-    }
+    });
   }
+
+  setupSubscribeForm({
+    formId: 'heroForm',
+    inputId: 'heroEmailInput',
+    btnId: 'heroSubmitBtn',
+    successId: 'heroSuccess',
+    statusId: 'heroFormStatus',
+  });
+  setupSubscribeForm({
+    formId: 'finalForm',
+    inputId: 'finalEmailInput',
+    btnId: 'finalSubmitBtn',
+    successId: 'finalSuccess',
+    statusId: 'finalFormStatus',
+  });
 </script>
 
 </body>
