@@ -1,0 +1,19 @@
+{
+  "name": "@content-site/jcl",
+  "type": "module",
+  "private": true,
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev --port 4321",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^5.0.3",
+    "@astrojs/vercel": "^10.0.4",
+    "@directus/sdk": "^21.2.2",
+    "astro": "^6.1.4",
+    "marked": "^18.0.0"
+  }
+}

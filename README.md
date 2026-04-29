@@ -1,43 +1,57 @@
-# Astro Starter Kit: Minimal
+# content-site
 
-```sh
-npm create astro@latest -- --template minimal
+pnpm monorepo containing two Astro apps:
+
+- `apps/jcl` → [jasonclewis.com](https://jasonclewis.com) (spec-bar nav, lime accent)
+- `apps/nextbuild` → [nextbuild.com](https://nextbuild.com) (floating-pill nav, orange accent)
+
+The two sites share no code — only Directus as a shared CMS, with each app filtering articles by its own `brand` field.
+
+## Project structure
+
+```
+content-site/
+├── apps/
+│   ├── jcl/                 # @content-site/jcl
+│   └── nextbuild/           # @content-site/nextbuild
+├── pnpm-workspace.yaml
+├── package.json             # workspace orchestration scripts
+└── pnpm-lock.yaml
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Commands
 
-## 🚀 Project Structure
+Run from the repo root:
 
-Inside of your Astro project, you'll see the following folders and files:
+| Command | Action |
+| --- | --- |
+| `pnpm install` | Install all workspace dependencies |
+| `pnpm dev:jcl` | Start `apps/jcl` dev server on `localhost:4321` |
+| `pnpm dev:nextbuild` | Start `apps/nextbuild` dev server on `localhost:4321` |
+| `pnpm build:jcl` | Build `apps/jcl` |
+| `pnpm build:nextbuild` | Build `apps/nextbuild` |
+| `pnpm build` | Build both apps (recursive) |
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+Each app also accepts direct invocation, e.g. `pnpm --filter @content-site/jcl astro check`.
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## Environment
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+Each app has its own `.env` (gitignored) and `.env.example`. Copy the example, fill values, and run.
 
-Any static assets, like images, can be placed in the `public/` directory.
+- `apps/jcl/.env` → `DIRECTUS_URL`, `DIRECTUS_TOKEN`, `PUBLIC_GA_MEASUREMENT_ID`
+- `apps/nextbuild/.env` → same plus `RESEND_API_KEY`
 
-## 🧞 Commands
+## Deployment
 
-All commands are run from the root of the project, from a terminal:
+Two Vercel projects, both linked to this repo:
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+| Project | Domain | Root Directory |
+| --- | --- | --- |
+| `jasonclewis` | jasonclewis.com | `apps/jcl` |
+| `nextbuild` | nextbuild.com | `apps/nextbuild` |
 
-## 👀 Want to learn more?
+Each app's `vercel.json` overrides install/build commands to use pnpm workspace filters. Env vars are configured per project via `vercel env add`.
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+## Adding articles
+
+Articles live in Directus. Each article has a `brand` field; set it to either `jason-c-lewis` or `nextbuild` to control which site renders the article at `/insights/<slug>`.

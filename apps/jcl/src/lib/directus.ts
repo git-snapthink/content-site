@@ -3,16 +3,17 @@ import { createDirectus, rest, staticToken, readItems } from '@directus/sdk';
 const directusUrl = import.meta.env.DIRECTUS_URL;
 const directusToken = import.meta.env.DIRECTUS_TOKEN;
 
-const brand = import.meta.env.PUBLIC_BRAND;
+const brand = 'jason-c-lewis';
 
 const directus = createDirectus(directusUrl)
   .with(staticToken(directusToken))
   .with(rest());
 
 function brandFilter(): Record<string, any> {
-  const filter: Record<string, any> = { status: { _eq: 'published' } };
-  if (brand) filter.brand = { _eq: brand };
-  return filter;
+  return {
+    status: { _eq: 'published' },
+    brand: { _eq: brand },
+  };
 }
 
 export async function getAllArticles() {

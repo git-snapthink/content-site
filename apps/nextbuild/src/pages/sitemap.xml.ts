@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
 import { getAllArticles, getAllCategories } from '../lib/directus';
 
-const siteUrl = import.meta.env.SITE_URL || 'https://example.com';
+const siteUrl = 'https://nextbuild.com';
 
 export const GET: APIRoute = async () => {
   const articles = await getAllArticles();

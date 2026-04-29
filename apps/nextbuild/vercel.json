@@ -1,0 +1,6 @@
+{
+  "framework": "astro",
+  "installCommand": "cd ../.. && pnpm install --frozen-lockfile",
+  "buildCommand": "pnpm --filter @content-site/nextbuild build",
+  "outputDirectory": "dist"
+}

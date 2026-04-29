@@ -1,5 +1,4 @@
 ---
-import { getBrandTheme } from '../lib/brands';
 import GoogleAnalytics from '../components/GoogleAnalytics.astro';
 
 interface NavLink {
@@ -22,10 +21,8 @@ const navLinks = Astro.props.navLinks ?? [
   { label: 'What You Get', href: '#what-you-get' },
   { label: 'Insights', href: '/insights' },
 ];
-const theme = getBrandTheme();
-const googleFontUrl = theme.googleFont
-  ? `https://fonts.googleapis.com/css2?family=${theme.googleFont.replace(/ /g, '+')}:wght@400;600;700&display=swap`
-  : null;
+
+const logoHtml = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 175 176"><path fill="#ff6b35" transform="scale(0.69392)" d="M125.882 30.2033C128.699 31.4207 133.053 34.0651 135.825 35.669L155.677 47.3445L187.177 65.6662C190.941 67.8461 201.678 73.7659 204.571 76.2186C205.211 77.8272 204.967 94.7161 204.973 97.7343L204.993 136.381L204.982 155.961C204.979 159.435 205.129 164.531 204.709 167.806C204.164 168.432 202.305 169.55 201.515 170.024C183.514 180.632 165.453 191.139 147.334 201.544L134.111 209.252C132.357 210.277 127.533 213.264 125.927 213.712C122.062 212.103 114.708 207.423 110.833 205.149C101.827 199.983 92.8637 194.745 83.9437 189.433L59.7382 175.325C55.7875 173.03 50.7372 170.344 47.0977 167.853C46.7941 163.492 47.0124 156.047 47.0109 151.5L47.1684 115.561L47.1684 90.0732C47.1496 86.2426 46.844 79.8688 47.193 76.2868C47.7583 75.2311 87.9315 52.1627 93.5083 48.8831L114.674 36.519C118.189 34.4904 122.316 31.9324 125.882 30.2033ZM74.2153 91.5134L74.2523 131.782C74.253 137.788 74.5042 146.423 74.1897 152.291C78.3961 154.469 83.3866 157.534 87.5661 159.965L112.403 174.509C116.593 176.97 121.825 180.2 126.102 182.349C136.827 176.203 147.517 169.998 158.172 163.733C164.611 159.985 171.514 156.121 177.822 152.196C177.693 145.665 177.677 138.985 177.747 132.452C177.89 118.932 177.494 105.29 177.795 91.7834C174.502 89.9987 170.87 87.6245 167.529 85.6925C156.896 79.5426 146.292 73.2591 135.671 67.0935C134.868 66.6273 126.12 61.5154 126.072 61.4981C114.506 67.9004 102.942 75.0868 91.4328 81.6393C86.9754 84.1771 78.5 89.6548 74.2153 91.5134Z"/><defs><linearGradient id="gLogo" gradientUnits="userSpaceOnUse" x1="116.8" y1="82.06" x2="155" y2="149.76"><stop offset="0" stop-color="#ff9055"/><stop offset="1" stop-color="#ffb888"/></linearGradient></defs><path fill="url(#gLogo)" transform="scale(0.69392)" d="M125.12 76.9814C126.274 76.836 127.14 77.2401 128.132 77.7918C134.267 81.2021 140.345 84.9031 146.418 88.4139L157.527 94.8201C159.495 95.9573 162.799 97.7559 164.433 99.1311C164.705 99.9917 164.854 101.317 164.849 102.24C164.778 114.37 164.768 126.499 164.884 138.63C164.901 140.438 164.935 142.296 164.569 144.073C162.522 146.347 131.713 163.62 127.122 166.217C126.809 166.468 126.978 166.361 126.455 166.376C125.706 165.021 125.863 125.326 126.265 121.555C124.032 120.598 111.755 113.377 109.554 112.048C106.293 110.079 89.8654 100.973 87.896 98.9518C91.1875 96.5948 98.3762 92.6578 102.097 90.497L125.12 76.9814Z"/></svg><span style="font-family:Audiowide,sans-serif;font-size:20px;line-height:1.15"><span style="color:#26201c;font-weight:400">Next</span><span style="color:#ff6b35;font-weight:600">Build</span></span>`;
 ---
 
 <!doctype html>
@@ -33,29 +30,34 @@ const googleFontUrl = theme.googleFont
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href={theme.faviconPath ?? '/favicon.svg'} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
-    {googleFontUrl && <link rel="preconnect" href="https://fonts.googleapis.com" />}
-    {googleFontUrl && <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />}
-    {googleFontUrl && <link rel="stylesheet" href={googleFontUrl} />}
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Audiowide:wght@400;600;700&display=swap" />
     <slot name="head" />
     <GoogleAnalytics id={gaId} />
-    <style
-      define:vars={{
-        bg: theme.bg,
-        surface: theme.surface,
-        border: theme.border,
-        text: theme.text,
-        textMuted: theme.textMuted,
-        textFaint: theme.textFaint,
-        accent: theme.accent,
-        accentText: theme.accentText,
-        displayFont: `'${theme.displayFont}', system-ui, sans-serif`,
-      }}
-      is:global
-    >
-      /* ── Reset ── */
+    <style is:global>
+      :root {
+        --bg: #f5f5f5;
+        --surface: #ffffff;
+        --border: #e8e8e8;
+        --text: #1a1a1a;
+        --textMuted: #777777;
+        --textFaint: #aaaaaa;
+        --accent: #ff6b35;
+        --accentText: #ffffff;
+        --displayFont: 'Audiowide', system-ui, sans-serif;
+        --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+        --ease-spring: cubic-bezier(0.32, 0.72, 0, 1);
+        --radius-pill: 9999px;
+        --radius-lg: 1.5rem;
+        --radius-xl: 2rem;
+        --accent-tint: color-mix(in srgb, var(--accent) 13%, transparent);
+        --accent-faint: color-mix(in srgb, var(--accent) 7%, transparent);
+      }
+
       *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
       html {
@@ -79,17 +81,6 @@ const googleFontUrl = theme.googleFont
         color: var(--accentText);
       }
 
-      /* ── Easing tokens ── */
-      :root {
-        --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-        --ease-spring: cubic-bezier(0.32, 0.72, 0, 1);
-        --radius-pill: 9999px;
-        --radius-lg: 1.5rem;
-        --radius-xl: 2rem;
-        --accent-tint: color-mix(in srgb, var(--accent) 13%, transparent);
-        --accent-faint: color-mix(in srgb, var(--accent) 7%, transparent);
-      }
-
       /* ── Navigation — Floating Glass Pill ── */
       .nav-wrapper {
         position: fixed;
@@ -102,11 +93,7 @@ const googleFontUrl = theme.googleFont
         transition: transform 0.6s var(--ease-out-expo);
         will-change: transform;
       }
-
-      .nav-wrapper.scrolled {
-        transform: translateY(-8px);
-      }
-
+      .nav-wrapper.scrolled { transform: translateY(-8px); }
       .nav {
         display: flex;
         align-items: center;
@@ -122,12 +109,10 @@ const googleFontUrl = theme.googleFont
         transition: all 0.6s var(--ease-out-expo);
         box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
       }
-
       .nav-wrapper.scrolled .nav {
         background: rgba(255, 255, 255, 0.9);
         box-shadow: 0 4px 32px rgba(0, 0, 0, 0.1);
       }
-
       .nav-logo {
         display: flex;
         align-items: center;
@@ -136,25 +121,10 @@ const googleFontUrl = theme.googleFont
         color: var(--text);
         flex-shrink: 0;
       }
+      .nav-logo svg { height: 28px; width: auto; }
+      .nav-logo-text { font-family: var(--displayFont); font-size: 20px; line-height: 1.15; }
 
-      .nav-logo svg {
-        height: 28px;
-        width: auto;
-      }
-
-      .nav-logo-text {
-        font-family: var(--displayFont);
-        font-size: 20px;
-        line-height: 1.15;
-      }
-
-      .nav-links {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        list-style: none;
-      }
-
+      .nav-links { display: flex; align-items: center; gap: 4px; list-style: none; }
       .nav-links a {
         font-size: 14px;
         font-weight: 500;
@@ -164,7 +134,6 @@ const googleFontUrl = theme.googleFont
         transition: all 0.4s var(--ease-out-expo);
         white-space: nowrap;
       }
-
       .nav-links a:hover {
         color: var(--text);
         background: rgba(0, 0, 0, 0.04);
@@ -188,17 +157,9 @@ const googleFontUrl = theme.googleFont
         text-decoration: none;
         flex-shrink: 0;
       }
+      .nav-cta:hover { opacity: 0.88; transform: scale(1.02); }
+      .nav-cta:active { transform: scale(0.98); }
 
-      .nav-cta:hover {
-        opacity: 0.88;
-        transform: scale(1.02);
-      }
-
-      .nav-cta:active {
-        transform: scale(0.98);
-      }
-
-      /* ── Hamburger ── */
       .nav-hamburger {
         display: none;
         flex-direction: column;
@@ -208,7 +169,6 @@ const googleFontUrl = theme.googleFont
         background: none;
         border: none;
       }
-
       .nav-hamburger span {
         display: block;
         width: 22px;
@@ -218,19 +178,10 @@ const googleFontUrl = theme.googleFont
         transition: all 0.4s var(--ease-out-expo);
         transform-origin: center;
       }
+      .nav-hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(4px, 4px); }
+      .nav-hamburger.active span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+      .nav-hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(4px, -4px); }
 
-      .nav-hamburger.active span:nth-child(1) {
-        transform: rotate(45deg) translate(4px, 4px);
-      }
-      .nav-hamburger.active span:nth-child(2) {
-        opacity: 0;
-        transform: scaleX(0);
-      }
-      .nav-hamburger.active span:nth-child(3) {
-        transform: rotate(-45deg) translate(4px, -4px);
-      }
-
-      /* ── Mobile overlay ── */
       .mobile-menu {
         display: none;
         position: fixed;
@@ -247,13 +198,7 @@ const googleFontUrl = theme.googleFont
         pointer-events: none;
         transition: opacity 0.5s var(--ease-out-expo);
       }
-
-      .mobile-menu.active {
-        display: flex;
-        opacity: 1;
-        pointer-events: all;
-      }
-
+      .mobile-menu.active { display: flex; opacity: 1; pointer-events: all; }
       .mobile-menu a {
         font-family: var(--displayFont);
         font-size: 28px;
@@ -265,44 +210,28 @@ const googleFontUrl = theme.googleFont
         transform: translateY(30px);
         opacity: 0;
       }
-
-      .mobile-menu.active a {
-        transform: translateY(0);
-        opacity: 1;
-      }
-
+      .mobile-menu.active a { transform: translateY(0); opacity: 1; }
       .mobile-menu.active a:nth-child(1) { transition-delay: 0.1s; }
       .mobile-menu.active a:nth-child(2) { transition-delay: 0.15s; }
       .mobile-menu.active a:nth-child(3) { transition-delay: 0.2s; }
       .mobile-menu.active a:nth-child(4) { transition-delay: 0.25s; }
+      .mobile-menu a:hover { color: var(--text); }
 
-      .mobile-menu a:hover {
-        color: var(--text);
-      }
-
-      /* ── Scroll Reveal ── */
       .reveal {
         opacity: 0;
         transform: translateY(32px);
         transition: opacity 0.8s var(--ease-out-expo), transform 0.8s var(--ease-out-expo);
       }
-
-      .reveal.visible {
-        opacity: 1;
-        transform: translateY(0);
-      }
-
+      .reveal.visible { opacity: 1; transform: translateY(0); }
       .reveal-delay-1 { transition-delay: 0.1s; }
       .reveal-delay-2 { transition-delay: 0.2s; }
       .reveal-delay-3 { transition-delay: 0.3s; }
 
-      /* ── Footer ── */
       .landing-footer {
         padding: 48px 24px;
         border-top: 1px solid var(--border);
         text-align: center;
       }
-
       .footer-brand {
         display: inline-flex;
         align-items: center;
@@ -314,35 +243,21 @@ const googleFontUrl = theme.googleFont
         line-height: 1.15;
         margin-bottom: 12px;
       }
-
-      .footer-brand svg {
-        height: 22px;
-        width: auto;
-      }
-
+      .footer-brand svg { height: 22px; width: auto; }
       .footer-links {
         display: flex;
         justify-content: center;
         gap: 24px;
         margin-bottom: 16px;
       }
-
       .footer-links a {
         font-size: 13px;
         color: var(--textMuted);
         transition: color 0.2s;
       }
+      .footer-links a:hover { color: var(--text); }
+      .footer-copy { font-size: 12px; color: var(--textFaint); }
 
-      .footer-links a:hover {
-        color: var(--text);
-      }
-
-      .footer-copy {
-        font-size: 12px;
-        color: var(--textFaint);
-      }
-
-      /* ── Responsive ── */
       @media (max-width: 900px) {
         .nav-links { display: none; }
         .nav-cta.desktop-only { display: none; }
@@ -351,11 +266,10 @@ const googleFontUrl = theme.googleFont
     </style>
   </head>
   <body>
-    <!-- Navigation -->
     <div class="nav-wrapper" id="navWrapper">
       <nav class="nav">
         <a href="/" class="nav-logo">
-          {theme.logoHtml ? <Fragment set:html={theme.logoHtml} /> : <span class="nav-logo-text">{theme.name}</span>}
+          <Fragment set:html={logoHtml} />
         </a>
         <div class="nav-links">
           {navLinks.map(link => <a href={link.href}>{link.label}</a>)}
@@ -369,7 +283,6 @@ const googleFontUrl = theme.googleFont
       </nav>
     </div>
 
-    <!-- Mobile menu -->
     <div class="mobile-menu" id="mobileMenu">
       {navLinks.map(link => <a href={link.href}>{link.label}</a>)}
       <a href={ctaHref}>{ctaLabel}</a>
@@ -377,27 +290,24 @@ const googleFontUrl = theme.googleFont
 
     <slot />
 
-    <!-- Footer -->
     <footer class="landing-footer">
       <div>
         <a href="/" class="footer-brand">
-          {theme.logoHtml ? <Fragment set:html={theme.logoHtml} /> : <span>{theme.name}</span>}
+          <Fragment set:html={logoHtml} />
         </a>
       </div>
       <div class="footer-links">
         {navLinks.map(link => <a href={link.href}>{link.label}</a>)}
       </div>
-      <span class="footer-copy">&copy; {new Date().getFullYear()} {theme.name}. All rights reserved.</span>
+      <span class="footer-copy">&copy; {new Date().getFullYear()} NextBuild. All rights reserved.</span>
     </footer>
 
     <script is:inline>
-      // Nav scroll behavior
       const navWrapper = document.getElementById('navWrapper');
       window.addEventListener('scroll', () => {
         navWrapper.classList.toggle('scrolled', window.scrollY > 60);
       }, { passive: true });
 
-      // Hamburger toggle
       const hamburger = document.getElementById('hamburger');
       const mobileMenu = document.getElementById('mobileMenu');
       hamburger.addEventListener('click', () => {
@@ -406,7 +316,6 @@ const googleFontUrl = theme.googleFont
         document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
       });
 
-      // Close mobile menu on link click
       mobileMenu.querySelectorAll('a').forEach(link => {
         link.addEventListener('click', () => {
           hamburger.classList.remove('active');
@@ -415,7 +324,6 @@ const googleFontUrl = theme.googleFont
         });
       });
 
-      // Scroll reveal
       const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
@@ -427,7 +335,6 @@ const googleFontUrl = theme.googleFont
 
       document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-      // Smooth scroll for anchor links
       document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', (e) => {
           const target = document.querySelector(anchor.getAttribute('href'));

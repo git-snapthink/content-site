@@ -1,7 +1,7 @@
 ---
 import { getAllArticles, getArticleBySlug } from '../../lib/directus';
 import { marked } from 'marked';
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import Layout from '../../layouts/Layout.astro';
 
 export async function getStaticPaths() {
   const articles = await getAllArticles();
@@ -35,7 +35,7 @@ const faqSchema = article.faq_items?.length
     }
   : null;
 
-const siteUrl = import.meta.env.SITE_URL || '';
+const siteUrl = Astro.site?.toString().replace(/\/$/, '') || '';
 const directusUrl = import.meta.env.DIRECTUS_URL || '';
 const canonicalUrl = article.canonical_url || `${siteUrl}/insights/${article.slug}`;
 const ogImageUrl = article.og_image ? `${directusUrl}/assets/${article.og_image}` : null;
@@ -65,7 +65,7 @@ const tags = ((article.tags || []) as any[])
   .filter(Boolean);
 ---
 
-<BaseLayout
+<Layout
   title={article.meta_title || article.title}
   description={article.meta_description || article.excerpt}
 >
@@ -178,7 +178,7 @@ const tags = ((article.tags || []) as any[])
       </aside>
     )}
   </div>
-</BaseLayout>
+</Layout>
 
 <style>
   /* ── Page header ── */

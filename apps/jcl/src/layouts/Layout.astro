@@ -1,0 +1,268 @@
+---
+import GoogleAnalytics from '../components/GoogleAnalytics.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+const gaId = import.meta.env.PUBLIC_GA_MEASUREMENT_ID;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Audiowide&family=Orbitron:wght@400;600;700&display=swap" />
+    <slot name="head" />
+    <GoogleAnalytics id={gaId} />
+    <style is:global>
+      :root {
+        --bg: #ffffff;
+        --surface: #f9fafb;
+        --border: #e5e7eb;
+        --text: #1a1a1a;
+        --textMuted: #555555;
+        --textFaint: #999999;
+        --accent: #c1d42f;
+        --accentText: #1a1a1a;
+        --displayFont: 'Orbitron', system-ui, sans-serif;
+        --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+        --ease-spring: cubic-bezier(0.32, 0.72, 0, 1);
+        --radius-pill: 9999px;
+        --radius-lg: 1.5rem;
+      }
+
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+
+      body {
+        font-family: system-ui, -apple-system, sans-serif;
+        line-height: 1.7;
+        color: var(--text);
+        background: var(--bg);
+        min-height: 100vh;
+      }
+
+      /* ── Spec-page status bar nav ── */
+      .nav-wrapper { display: contents; }
+      .spec-nav {
+        position: fixed; top: 0; left: 0; right: 0; z-index: 40;
+        width: 100%;
+        display: flex; align-items: center; gap: 0;
+        padding: 12px 28px;
+        background: #111113;
+        border-bottom: 1px solid rgba(193, 212, 47, 0.32);
+        box-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+        font-family: 'Audiowide', system-ui, sans-serif;
+      }
+      .spec-nav-brand {
+        color: var(--accent);
+        font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase;
+        padding-right: 28px; margin-right: 28px;
+        border-right: 1px solid rgba(245, 245, 240, 0.15);
+        text-decoration: none;
+      }
+      .spec-nav-brand:hover { text-decoration: none; }
+      .spec-nav-links { display: flex; align-items: center; gap: 8px; flex: 1; list-style: none; }
+      .spec-nav-links a {
+        color: rgba(245, 245, 240, 0.55);
+        font-family: 'Audiowide', system-ui, sans-serif;
+        font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+        padding: 6px 12px;
+        display: inline-flex; align-items: center; gap: 8px;
+        text-decoration: none;
+        transition: color 0.3s var(--ease-out-expo);
+      }
+      .spec-nav-links a::before {
+        content: ''; display: inline-block;
+        width: 7px; height: 1px;
+        background: var(--accent);
+      }
+      .spec-nav-links a:hover { color: var(--accent); text-decoration: none; }
+      .spec-nav-time {
+        color: rgba(245, 245, 240, 0.32);
+        font-family: 'Audiowide', system-ui, sans-serif;
+        font-size: 10px; letter-spacing: 0.2em;
+        margin-right: 16px;
+      }
+      .spec-nav-cta {
+        background: var(--accent); color: var(--accentText);
+        border: none; border-radius: 2px;
+        padding: 8px 18px;
+        font-family: 'Audiowide', system-ui, sans-serif;
+        font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
+        cursor: pointer;
+        text-decoration: none;
+      }
+      .spec-nav-cta:hover { opacity: 0.88; text-decoration: none; }
+      .nav-hamburger span { background: rgba(245, 245, 240, 0.85); }
+
+      /* ── Hamburger ── */
+      .nav-hamburger {
+        display: none;
+        flex-direction: column;
+        gap: 5px;
+        cursor: pointer;
+        padding: 8px;
+        background: none;
+        border: none;
+      }
+      .nav-hamburger span {
+        display: block;
+        width: 22px;
+        height: 1.5px;
+        border-radius: 2px;
+        transition: all 0.4s var(--ease-out-expo);
+        transform-origin: center;
+      }
+      .nav-hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(4px, 4px); }
+      .nav-hamburger.active span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+      .nav-hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(4px, -4px); }
+
+      /* ── Mobile overlay ── */
+      .mobile-menu {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 35;
+        background: rgba(17, 17, 19, 0.97);
+        backdrop-filter: blur(40px);
+        -webkit-backdrop-filter: blur(40px);
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.5s var(--ease-out-expo);
+      }
+      .mobile-menu.active { display: flex; opacity: 1; pointer-events: all; }
+      .mobile-menu a {
+        font-family: 'Audiowide', system-ui, sans-serif;
+        font-size: 18px;
+        font-weight: 500;
+        color: rgba(245, 245, 240, 0.7);
+        padding: 12px 24px;
+        border-radius: var(--radius-lg);
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        transition: all 0.4s var(--ease-out-expo);
+        transform: translateY(30px);
+        opacity: 0;
+        text-decoration: none;
+      }
+      .mobile-menu.active a { transform: translateY(0); opacity: 1; }
+      .mobile-menu.active a:nth-child(1) { transition-delay: 0.1s; }
+      .mobile-menu.active a:nth-child(2) { transition-delay: 0.15s; }
+      .mobile-menu.active a:nth-child(3) { transition-delay: 0.2s; }
+      .mobile-menu.active a:nth-child(4) { transition-delay: 0.25s; }
+      .mobile-menu a:hover { color: var(--accent); }
+
+      /* ── Container ── */
+      .container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 120px 48px 100px;
+      }
+
+      /* ── Footer ── */
+      .site-footer {
+        padding: 40px 48px;
+        border-top: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        max-width: 1200px;
+        margin: 60px auto 0;
+      }
+      .footer-brand {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+        color: var(--text);
+        font-family: var(--displayFont);
+        font-size: 16px;
+        line-height: 1.15;
+      }
+      .footer-copy {
+        font-size: 12px;
+        color: var(--textFaint);
+      }
+
+      a { color: var(--accent); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+
+      @media (max-width: 900px) {
+        .spec-nav-links { display: none; }
+        .spec-nav-time { display: none; }
+        .nav-hamburger { display: flex; }
+      }
+      @media (max-width: 700px) {
+        .container, .site-footer { padding-left: 20px; padding-right: 20px; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="nav-wrapper" id="navWrapper">
+      <nav class="spec-nav">
+        <a href="/" class="spec-nav-brand">jasonclewis</a>
+        <div class="spec-nav-links">
+          <a href="/#why-this-exists">Why this exists</a>
+          <a href="/#what-you-get">What you get</a>
+          <a href="/insights">Insights</a>
+        </div>
+        <span class="spec-nav-time">Operator&apos;s Log / Weekly</span>
+        <a href="https://jasonclewis.substack.com" target="_blank" rel="noopener" class="spec-nav-cta">Subscribe</a>
+        <button class="nav-hamburger" id="hamburger" aria-label="Menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </nav>
+    </div>
+
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="/#why-this-exists">Why this exists</a>
+      <a href="/#what-you-get">What you get</a>
+      <a href="/insights">Insights</a>
+      <a href="https://jasonclewis.substack.com" target="_blank" rel="noopener">Subscribe</a>
+    </div>
+
+    <main class="container">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <a href="/" class="footer-brand">
+        <svg xmlns="http://www.w3.org/2000/svg" width="6" height="28" viewBox="0 0 24 48"><rect x="8" y="0" width="8" height="48" rx="2" fill="#c1d42f"/></svg>
+        <span style="font-family:'Orbitron',sans-serif;font-size:18px;font-weight:600;color:#1a1a1a;letter-spacing:-0.02em">jasonclewis</span>
+      </a>
+      <span class="footer-copy">&copy; {new Date().getFullYear()} Jason C. Lewis. All rights reserved.</span>
+    </footer>
+
+    <script is:inline>
+      const hamburger = document.getElementById('hamburger');
+      const mobileMenu = document.getElementById('mobileMenu');
+      hamburger.addEventListener('click', () => {
+        hamburger.classList.toggle('active');
+        mobileMenu.classList.toggle('active');
+        document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+      });
+      mobileMenu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          hamburger.classList.remove('active');
+          mobileMenu.classList.remove('active');
+          document.body.style.overflow = '';
+        });
+      });
+    </script>
+  </body>
+</html>

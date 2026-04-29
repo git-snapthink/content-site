@@ -1,15 +1,13 @@
 ---
 import { getAllArticles } from '../../lib/directus';
-import { getBrandTheme } from '../../lib/brands';
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import Layout from '../../layouts/Layout.astro';
 
 const articles = await getAllArticles() as any[];
-const theme = getBrandTheme();
 const directusUrl = import.meta.env.DIRECTUS_URL || '';
 
 const thumbPatterns = [
-  '\u2592\u2593\u2591\u2592\u2593', '\u25C6\u25C7\u25C6\u25C7\u25C6', '\u2590\u2580\u2590\u2580\u2590',
-  '\u25A0\u25A1\u25A0\u25A1\u25A0', '\u2571\u2572\u2571\u2572\u2571', '\u25B2\u25B3\u25B2\u25B3\u25B2',
+  '▒▓░▒▓', '◆◇◆◇◆', '▐▀▐▀▐',
+  '■□■□■', '╱╲╱╲╱', '▲△▲△▲',
 ];
 
 function getCategoryName(article: any): string | null {
@@ -27,7 +25,7 @@ function estimateReadTime(article: any): string {
 }
 ---
 
-<BaseLayout title={`Insights — ${theme.name}`}>
+<Layout title="Insights — NextBuild">
   <div class="page-header">
     <h1><span class="accent">AI</span> Insights</h1>
     <p>Practical AI perspective from the operator's seat.</p>
@@ -69,7 +67,7 @@ function estimateReadTime(article: any): string {
       </a>
     ))}
   </div>
-</BaseLayout>
+</Layout>
 
 <style>
   .page-header {

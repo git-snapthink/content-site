@@ -1,0 +1,531 @@
+---
+import { getAllArticles, getArticleBySlug } from '../../lib/directus';
+import { marked } from 'marked';
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+  const articles = await getAllArticles();
+  return (articles as any[]).map((article) => ({
+    params: { slug: article.slug },
+  }));
+}
+
+const { slug } = Astro.params;
+const article = await getArticleBySlug(slug as string);
+
+if (!article) {
+  return Astro.redirect('/404');
+}
+
+const internalLinks = (article.internal_links || []) as Array<{
+  article_id: number;
+  slug: string;
+  anchor_text: string;
+}>;
+
+const faqSchema = article.faq_items?.length
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: (article.faq_items as any[]).map((faq: any) => ({
+        '@type': 'Question',
+        name: faq.question,
+        acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+      })),
+    }
+  : null;
+
+const siteUrl = Astro.site?.toString().replace(/\/$/, '') || '';
+const directusUrl = import.meta.env.DIRECTUS_URL || '';
+const canonicalUrl = article.canonical_url || `${siteUrl}/insights/${article.slug}`;
+const ogImageUrl = article.og_image ? `${directusUrl}/assets/${article.og_image}` : null;
+const heroImageUrl = article.og_image ? `${directusUrl}/assets/${article.og_image}?width=1200&format=webp&quality=85` : null;
+
+// Render markdown to HTML (passthrough for already-HTML bodies)
+const rawBody = article.body || '';
+const rawHtml = await marked(rawBody);
+
+// Add IDs to all h2/h3 headings and extract TOC items
+const tocItems: Array<{ level: number; text: string; id: string }> = [];
+const bodyHtmlWithIds = rawHtml.replace(
+  /<h([23])([^>]*)>(.*?)<\/h\1>/gi,
+  (_full: string, level: string, attrs: string, inner: string) => {
+    const text = inner.replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, ' ');
+    const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    tocItems.push({ level: parseInt(level, 10), text, id });
+    return `<h${level} id="${id}"${attrs}>${inner}</h${level}>`;
+  }
+);
+
+const categories = ((article.categories || []) as any[])
+  .map((c: any) => c.categories_id?.name)
+  .filter(Boolean);
+const tags = ((article.tags || []) as any[])
+  .map((t: any) => t.tags_id?.name)
+  .filter(Boolean);
+---
+
+<Layout
+  title={article.meta_title || article.title}
+  description={article.meta_description || article.excerpt}
+>
+  <Fragment slot="head">
+    <link rel="canonical" href={canonicalUrl} />
+    {article.robots && <meta name="robots" content={article.robots} />}
+
+    <meta property="og:title" content={article.og_title || article.meta_title || article.title} />
+    <meta property="og:description" content={article.og_description || article.meta_description || article.excerpt || ''} />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content={canonicalUrl} />
+    {ogImageUrl && <meta property="og:image" content={ogImageUrl} />}
+
+    {article.published_at && <meta property="article:published_time" content={article.published_at} />}
+    {(article.categories as any[])?.map((cat: any) => (
+      <meta property="article:section" content={cat.categories_id?.name} />
+    ))}
+    {(article.tags as any[])?.map((tag: any) => (
+      <meta property="article:tag" content={tag.tags_id?.name} />
+    ))}
+
+    {article.structured_data && (
+      <script type="application/ld+json" set:html={JSON.stringify(article.structured_data)} />
+    )}
+    {faqSchema && (
+      <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+    )}
+  </Fragment>
+
+  <div class="page-header">
+    <h1>{article.title}</h1>
+    {article.excerpt && <p>{article.excerpt}</p>}
+  </div>
+
+  {article.published_at && (
+    <div class="article-date">
+      <time datetime={article.published_at}>
+        {new Date(article.published_at).toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        })}
+      </time>
+      {categories.length > 0 && (
+        <div class="header-categories">
+          {categories.map((name) => (
+            <span class="category-pill">{name}</span>
+          ))}
+        </div>
+      )}
+    </div>
+  )}
+
+  {heroImageUrl && (
+    <div class="featured-image">
+      <img src={heroImageUrl} alt={article.title} loading="eager" />
+    </div>
+  )}
+
+  <div class="article-layout">
+    <article class="article-main">
+      <div class="article-body" set:html={bodyHtmlWithIds} />
+
+      {article.faq_items && (article.faq_items as any[]).length > 0 && (
+        <section class="article-faq">
+          <h2 id="faq">Frequently Asked Questions</h2>
+          {(article.faq_items as any[]).map((faq: any) => (
+            <details>
+              <summary>{faq.question}</summary>
+              <p>{faq.answer}</p>
+            </details>
+          ))}
+        </section>
+      )}
+
+      {internalLinks.length > 0 && (
+        <nav class="related-articles">
+          <h3>Continue Reading</h3>
+          <div class="related-grid">
+            {internalLinks.map((link) => (
+              <a href={`/insights/${link.slug}`} class="related-link">{link.anchor_text}</a>
+            ))}
+          </div>
+        </nav>
+      )}
+    </article>
+
+    {tocItems.length > 0 && (
+      <aside class="toc-sidebar">
+        <div class="toc-sticky">
+          <h4>On This Page</h4>
+          <ul>
+            {tocItems.map((item) => (
+              <li>
+                <a href={`#${item.id}`} class:list={[{ nested: item.level === 3 }]}>{item.text}</a>
+              </li>
+            ))}
+          </ul>
+          {tags.length > 0 && (
+            <>
+              <h4>Tags</h4>
+              <div class="sidebar-tags">
+                {tags.map((name) => (
+                  <span class="sidebar-tag">{name}</span>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      </aside>
+    )}
+  </div>
+</Layout>
+
+<style>
+  /* ── Page header ── */
+  .page-header {
+    margin-bottom: 16px;
+  }
+  .page-header h1 {
+    font-family: var(--displayFont);
+    font-size: 42px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    margin-bottom: 12px;
+    color: var(--text);
+  }
+  .page-header p {
+    font-size: 17px;
+    color: var(--textMuted);
+    line-height: 1.6;
+  }
+
+  /* ── Date & categories row ── */
+  .article-date {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  .article-date time {
+    font-size: 13px;
+    color: var(--textFaint);
+  }
+  .header-categories {
+    display: flex;
+    gap: 6px;
+  }
+  .category-pill {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 9999px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+    color: var(--accent);
+  }
+
+  /* ── Featured image ── */
+  .featured-image {
+    margin-bottom: 32px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .featured-image img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+
+  /* ── Article layout — content left, TOC right ── */
+  .article-layout {
+    display: flex;
+    gap: 56px;
+  }
+
+  /* ── Main article column ── */
+  .article-main {
+    flex: 1;
+    min-width: 0;
+    max-width: 720px;
+  }
+
+  /* ── TOC sidebar (right) ── */
+  .toc-sidebar {
+    width: 200px;
+    flex-shrink: 0;
+  }
+  .toc-sticky {
+    position: sticky;
+    top: 100px;
+  }
+  .toc-sidebar h4 {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--textFaint);
+    margin-bottom: 12px;
+  }
+  .toc-sidebar ul {
+    list-style: none;
+    margin-bottom: 24px;
+    padding: 0;
+  }
+  .toc-sidebar li {
+    margin-bottom: 1px;
+  }
+  .toc-sidebar a {
+    display: block;
+    padding: 4px 10px;
+    border-left: 2px solid transparent;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--textFaint);
+    text-decoration: none;
+    transition: all 0.15s;
+  }
+  .toc-sidebar a:hover {
+    color: var(--text);
+    border-left-color: var(--accent);
+    text-decoration: none;
+  }
+  .toc-sidebar a.nested {
+    padding-left: 20px;
+    font-size: 11px;
+  }
+  .sidebar-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 24px;
+  }
+  .sidebar-tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+    color: var(--accent);
+  }
+
+  /* ── Article body ── */
+  .article-body :global(h2) {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 40px 0 16px;
+    padding-top: 8px;
+    color: var(--text);
+  }
+  .article-body :global(h2:first-child) {
+    margin-top: 0;
+    padding-top: 0;
+  }
+  .article-body :global(h3) {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 32px 0 12px;
+    color: var(--text);
+  }
+  .article-body :global(p) {
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--textMuted);
+    margin-bottom: 16px;
+  }
+  .article-body :global(strong) {
+    color: var(--text);
+    font-weight: 600;
+  }
+  .article-body :global(ul),
+  .article-body :global(ol) {
+    margin-bottom: 16px;
+    padding-left: 24px;
+  }
+  .article-body :global(li) {
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--textMuted);
+    margin-bottom: 6px;
+  }
+  .article-body :global(blockquote) {
+    background: color-mix(in srgb, var(--accent) 5%, transparent);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 20px 0;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--textMuted);
+  }
+  .article-body :global(blockquote p) {
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+  .article-body :global(blockquote p:last-child) {
+    margin-bottom: 0;
+  }
+  .article-body :global(blockquote strong) {
+    color: var(--text);
+  }
+  .article-body :global(a) {
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .article-body :global(a:hover) {
+    text-decoration: underline;
+  }
+  .article-body :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 14px;
+  }
+  .article-body :global(th),
+  .article-body :global(td) {
+    padding: 10px 14px;
+    text-align: left;
+    border: 1px solid var(--border);
+    color: var(--textMuted);
+  }
+  .article-body :global(th) {
+    background: var(--surface);
+    font-weight: 600;
+    color: var(--text);
+    font-size: 13px;
+  }
+  .article-body :global(code) {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: 0.9em;
+    color: var(--accent);
+  }
+  .article-body :global(pre) {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 20px 0;
+    overflow-x: auto;
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--textMuted);
+  }
+  .article-body :global(pre code) {
+    background: none;
+    border: none;
+    padding: 0;
+    color: inherit;
+  }
+  .article-body :global(em) {
+    font-style: italic;
+  }
+  .article-body :global(hr) {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 32px 0;
+  }
+
+  /* ── FAQ ── */
+  .article-faq {
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+  }
+  .article-faq h2 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: var(--text);
+  }
+  details {
+    margin-bottom: 8px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    transition: border-color 0.2s;
+  }
+  details[open] {
+    border-color: var(--accent);
+  }
+  summary {
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text);
+    padding: 4px 0;
+  }
+  details p {
+    padding: 8px 0 4px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--textMuted);
+  }
+
+  /* ── Related articles ── */
+  .related-articles {
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+  }
+  .related-articles h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: var(--text);
+  }
+  .related-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .related-link {
+    display: block;
+    padding: 12px 16px;
+    border-radius: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    text-decoration: none;
+    transition: all 0.15s;
+  }
+  .related-link:hover {
+    border-color: var(--accent);
+    text-decoration: none;
+  }
+
+  @media (max-width: 900px) {
+    .article-layout {
+      flex-direction: column;
+    }
+    .toc-sidebar {
+      width: 100%;
+      order: -1;
+    }
+    .toc-sticky {
+      position: static;
+    }
+    .article-main {
+      max-width: none;
+    }
+  }
+  @media (max-width: 700px) {
+    .page-header h1 { font-size: 30px; }
+    .page-header p { font-size: 15px; }
+  }
+</style>
