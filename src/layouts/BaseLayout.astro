@@ -63,17 +63,17 @@ const googleFontUrl = theme.googleFont
       /* ── Navigation — Floating Glass Pill ── */
       .nav-wrapper {
         position: fixed;
-        top: 0;
+        top: 20px;
         left: 0;
         right: 0;
         z-index: 40;
         display: flex;
         justify-content: center;
-        padding-top: 20px;
-        transition: padding-top 0.6s var(--ease-out-expo);
+        transition: transform 0.6s var(--ease-out-expo);
+        will-change: transform;
       }
       .nav-wrapper.scrolled {
-        padding-top: 12px;
+        transform: translateY(-8px);
       }
       .nav {
         display: flex;
